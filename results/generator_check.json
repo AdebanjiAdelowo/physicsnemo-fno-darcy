@@ -1,0 +1,120 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-10-05T20:04:03+00:00",
+    "git_commit": "cfb157c0f33ec801a2e59953e58e3e2d682abb02",
+    "git_dirty": true,
+    "device": "cpu",
+    "gpu_name": null,
+    "cuda_version": null,
+    "python_version": "3.12.2",
+    "torch_version": "2.14.1",
+    "physicsnemo": {
+      "version": "2.3.0a0",
+      "commit": "b45a5c810c741e6b41f8515be24c51121f8fc21f",
+      "url": "https://github.com/nvidia/physicsnemo"
+    },
+    "warp_version": "1.18.0",
+    "numpy_version": "2.5.3",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "processor": "arm"
+  },
+  "seed": 0,
+  "diversity": {
+    "Darcy2D": {
+      "batch_size": 16,
+      "batches": 2,
+      "distinct_fields_per_batch": [
+        1,
+        1
+      ],
+      "distinct_fields_total": 2,
+      "coefficients_per_batch": 1600,
+      "distinct_coefficient_values_per_batch": [
+        4,
+        4
+      ]
+    },
+    "IndependentDarcy2D": {
+      "batch_size": 16,
+      "batches": 2,
+      "distinct_fields_per_batch": [
+        16,
+        16
+      ],
+      "distinct_fields_total": 32,
+      "coefficients_per_batch": 1600,
+      "distinct_coefficient_values_per_batch": [
+        1600,
+        1600
+      ]
+    }
+  },
+  "solver": [
+    {
+      "resolution": 64,
+      "n_samples": 4,
+      "by_threshold": [
+        {
+          "convergence_threshold": 1e-06,
+          "rel_l2_vs_kernel_solve": 0.004162818000816459,
+          "rel_l2_vs_flux_solve": 0.31047900264571593,
+          "rel_l2_vs_laplace_solve": 0.019860538890808674,
+          "kernel_residual_rms": 0.006532001767595742,
+          "flux_residual_rms": 5.043866981362947
+        },
+        {
+          "convergence_threshold": 1e-07,
+          "rel_l2_vs_kernel_solve": 0.00045445162783465945,
+          "rel_l2_vs_flux_solve": 0.31490748564488935,
+          "rel_l2_vs_laplace_solve": 0.016330775817542515,
+          "kernel_residual_rms": 0.0007226328646297775,
+          "flux_residual_rms": 5.060741671629785
+        }
+      ]
+    },
+    {
+      "resolution": 128,
+      "n_samples": 4,
+      "by_threshold": [
+        {
+          "convergence_threshold": 1e-06,
+          "rel_l2_vs_kernel_solve": 0.0027003328565626756,
+          "rel_l2_vs_flux_solve": 0.3335393484636495,
+          "rel_l2_vs_laplace_solve": 0.007452142308912718,
+          "kernel_residual_rms": 0.007052314485626525,
+          "flux_residual_rms": 7.415448510583243
+        },
+        {
+          "convergence_threshold": 1e-07,
+          "rel_l2_vs_kernel_solve": 0.0016285533642686769,
+          "rel_l2_vs_flux_solve": 0.32990674517832214,
+          "rel_l2_vs_laplace_solve": 0.010159987556882811,
+          "kernel_residual_rms": 0.002492077369984327,
+          "flux_residual_rms": 7.394683603702128
+        }
+      ]
+    },
+    {
+      "resolution": 256,
+      "n_samples": 4,
+      "by_threshold": [
+        {
+          "convergence_threshold": 1e-06,
+          "rel_l2_vs_kernel_solve": 0.013291736652229269,
+          "rel_l2_vs_flux_solve": 0.3533833121328198,
+          "rel_l2_vs_laplace_solve": 0.010540745464526494,
+          "kernel_residual_rms": 0.033645051603437934,
+          "flux_residual_rms": 10.790410830892084
+        },
+        {
+          "convergence_threshold": 1e-07,
+          "rel_l2_vs_kernel_solve": 0.0016793079283480856,
+          "rel_l2_vs_flux_solve": 0.34030210915407566,
+          "rel_l2_vs_laplace_solve": 0.0050252397113841486,
+          "kernel_residual_rms": 0.007467554158783183,
+          "flux_residual_rms": 10.673517222009417
+        }
+      ]
+    }
+  ]
+}

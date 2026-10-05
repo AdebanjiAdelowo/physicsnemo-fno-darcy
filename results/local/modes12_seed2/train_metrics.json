@@ -1,0 +1,13 @@
+{
+  "run": "modes12_seed2",
+  "fno_modes": 12,
+  "seed": 2,
+  "parameters": 2365169,
+  "optimiser_steps": 960,
+  "training_samples_seen": 30720,
+  "final_train_loss": 0.00037834091926924884,
+  "train_seconds": 329.90424329205416,
+  "optimisation_seconds": 308.8759204966482,
+  "data_seconds": 2.0497433833079413,
+  "peak_train_memory_mb": null
+}
