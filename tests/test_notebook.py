@@ -23,11 +23,33 @@ def test_cells_parse_and_have_no_stored_output():
             assert cell["outputs"] == []
 
 
-def test_full_study_is_off_by_default_and_guarded():
+def test_expensive_steps_are_off_by_default_and_guarded():
     code = _code()
     assert re.search(r"^RUN_FULL = False\b", code[0], re.M)
-    full_cells = [c for c in code if "--config full --resume" in c]
-    assert len(full_cells) == 1 and full_cells[0].lstrip().startswith("if RUN_FULL is True:")
+    assert re.search(r"^RUN_OFFICIAL = False\b", code[0], re.M)
+    for command, flag in (("--config full --resume", "RUN_FULL"), ("--config official --resume", "RUN_OFFICIAL")):
+        cells = [c for c in code if command in c]
+        assert len(cells) == 1
+        # the step starts only behind `is not True` and a budget comparison, never by reducing the config
+        assert f"if {flag} is not True:" in cells[0]
+        assert "> hours_left()" in cells[0] and "was not reduced" in cells[0]
+        assert cells[0].index(f"if {flag} is not True:") < cells[0].index(command)
+
+
+def test_generator_check_runs_before_any_training():
+    text = "\n".join(_code())
+    assert text.index("verify_generator.py --device cuda") < text.index("scripts/train.py")
+
+
+def test_official_runs_only_after_full():
+    cell = next(c for c in _code() if "--config official --resume" in c)
+    assert "elif not full_done:" in cell
+
+
+def test_archive_names():
+    text = "\n".join(_code())
+    for name in ("generator-check-cuda", "full", "full-eval-bundle", "official", "official-eval-bundle"):
+        assert f"physicsnemo-fno-darcy-{name}.zip" in text
 
 
 def test_ref_must_be_a_full_sha():
@@ -48,3 +70,6 @@ def test_projection_matches_the_full_config():
     assert f"n_runs = {len(cfg.study.fno_modes) * len(cfg.study.seeds)}" in text
     assert f"* {cfg.training.max_pseudo_epochs} * n_runs" in text
     assert max(cfg.study.fno_modes) == 16 and "study.fno_modes=[16]" in text
+    official = load_config("official")
+    assert f"* {official.training.max_pseudo_epochs} / 3600" in text
+    assert official.study.fno_modes == [12] and "official_probe/modes12_seed0" in text
