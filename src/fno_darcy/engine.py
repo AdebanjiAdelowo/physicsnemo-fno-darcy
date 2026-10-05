@@ -282,8 +282,8 @@ def prepare_study(cfg: DictConfig, root: Path, write_metadata: bool) -> tuple[Pa
     device = resolve_device(cfg.device)
     out_dir = Path(root) / cfg.output_dir
     out_dir.mkdir(parents=True, exist_ok=True)
+    metadata = collect_metadata(device)  # before the data is generated: the code state at start
     sets = load_datasets(cfg, device, root)
-    metadata = collect_metadata(device)
     metadata["config"] = OmegaConf.to_container(cfg, resolve=True)
     metadata["datasets"] = {split: s["info"] for split, s in sets.items()}
     if cfg.data.source == "stream":

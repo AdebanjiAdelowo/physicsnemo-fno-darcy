@@ -132,11 +132,13 @@ def plot_error_vs_modes(study: dict, path: Path) -> None:
         for r in runs:
             ax.scatter(r[key], 100 * r["test_rel_l2_mean"], s=34, color=colours[r["fno_modes"]], edgecolor="#fcfcfb", lw=1.2, zorder=3)
         ax.set_xlabel(label)
-        ax.set_yscale("log")
     axes[0].set_xticks(modes)
+    axes[0].set_ylim(bottom=0.0)
     axes[1].set_xscale("log")
+    axes[1].set_xticks([a["parameters"] for a in agg], [f"{a['parameters'] / 1e6:.2f} M" for a in agg])
+    axes[1].minorticks_off()
     for a in agg:
-        axes[1].annotate(f"{a['fno_modes']} modes", (a["parameters"], 100 * a["test_rel_l2_mean_mean"]), textcoords="offset points", xytext=(6, 7), color=MUTED, fontsize=9)
+        axes[1].annotate(f"{a['fno_modes']} modes", (a["parameters"], 100 * a["test_rel_l2_mean_mean"]), textcoords="offset points", xytext=(8, 14) if a is agg[0] else (0, 16), ha="left" if a is agg[0] else "center", color=MUTED, fontsize=9)
     axes[0].set_ylabel("Test relative $L^2$ error (%)")
     n_seeds = agg[0]["n_seeds"]
     fig.suptitle(f"Error against Fourier modes: one point per seed ({n_seeds}), line through the seed means ({_describe(study)})", color=INK)

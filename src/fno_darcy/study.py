@@ -40,12 +40,13 @@ def train_study(cfg: DictConfig, root: Path, resume: bool = False) -> Path:
     for modes, seed in engine.study_runs(cfg):
         run_dir = out_dir / engine.run_name(modes, seed)
         if resume and (run_dir / "train_metrics.json").exists():
-            print(f"[skip] {run_dir.name} already trained")
+            print(f"[skip] {run_dir.name} already trained", flush=True)
             continue
         metrics = engine.train_run(cfg, modes, seed, run_dir, device, sets)
         print(
             f"[train] {run_dir.name}: {metrics['parameters']} parameters, "
-            f"final train loss {metrics['final_train_loss']:.3e}, {metrics['train_seconds']:.1f} s on {device}"
+            f"final train loss {metrics['final_train_loss']:.3e}, {metrics['train_seconds']:.1f} s on {device}",
+            flush=True,
         )
     return out_dir
 
@@ -69,7 +70,7 @@ def evaluate_study(cfg: DictConfig, root: Path) -> dict:
         rows.append({k: row[k] for k in SUMMARY_FIELDS})
         if seed == cfg.study.seeds[0]:
             fields[f"prediction_modes{modes:02d}"] = prediction.numpy()
-        print(f"[eval] {run_dir.name}: test relative L2 {row['test_rel_l2_mean']:.4e}")
+        print(f"[eval] {run_dir.name}: test relative L2 {row['test_rel_l2_mean']:.4e}", flush=True)
 
     with open(out_dir / "summary.csv", "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=SUMMARY_FIELDS)
