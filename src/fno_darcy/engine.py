@@ -92,10 +92,10 @@ def validate_study(cfg: DictConfig) -> None:
         raise ValueError(f"data.source must be 'stream' or 'fixed', got {cfg.data.source!r}.")
 
 
-def load_datasets(cfg: DictConfig, device: torch.device, root: Path) -> dict:
+def load_datasets(cfg: DictConfig, device: torch.device, root: Path, with_train: bool = True) -> dict:
     """Validation and test sets (always finite), and the training set if ``data.source=fixed``."""
     sizes = {"validation": cfg.validation.sample_size, "test": cfg.data.test_samples}
-    if cfg.data.source == "fixed":
+    if cfg.data.source == "fixed" and with_train:
         sizes["train"] = cfg.training.pseudo_epoch_sample_size
     return {split: D.load_or_generate(cfg, split, n, device, root) for split, n in sizes.items()}
 
@@ -222,10 +222,13 @@ def train_run(cfg: DictConfig, fno_modes: int, seed: int, run_dir: Path, device:
     return metrics
 
 
-def evaluate_run(cfg: DictConfig, fno_modes: int, run_dir: Path, device: torch.device, sets: dict) -> tuple[dict, torch.Tensor]:
+def evaluate_run(
+    cfg: DictConfig, fno_modes: int, run_dir: Path, device: torch.device, sets: dict, write: bool = True
+) -> tuple[dict, torch.Tensor]:
     """Evaluate the checkpoint of ``run_dir`` on the fixed validation and test sets.
 
     Returns the metrics and the test predictions in physical units for the plotting samples.
+    ``write=False`` leaves ``eval_metrics.json`` untouched.
     """
     run_dir = Path(run_dir)
     normaliser = D.make_normaliser(cfg)
@@ -268,7 +271,8 @@ def evaluate_run(cfg: DictConfig, fno_modes: int, run_dir: Path, device: torch.d
     out["inference_ms_per_batch"] = 1e3 * statistics.median(times)
     out["inference_ms_per_sample"] = out["inference_ms_per_batch"] / len(batch)
     out["peak_inference_memory_mb"] = torch.cuda.max_memory_allocated() / 2**20 if device.type == "cuda" else None
-    write_json(run_dir / "eval_metrics.json", out)
+    if write:
+        write_json(run_dir / "eval_metrics.json", out)
     return out, fields
 
 
@@ -276,19 +280,22 @@ def study_runs(cfg: DictConfig) -> list[tuple[int, int]]:
     return [(int(m), int(s)) for m in cfg.study.fno_modes for s in cfg.study.seeds]
 
 
-def prepare_study(cfg: DictConfig, root: Path, write_metadata: bool) -> tuple[Path, torch.device, dict]:
+def prepare_study(cfg: DictConfig, root: Path, write_metadata: bool, with_train: bool = True) -> tuple[Path, torch.device, dict]:
     """Validate the config, resolve the device, load the data, optionally write ``study_metadata.json``."""
     validate_study(cfg)
     device = resolve_device(cfg.device)
     out_dir = Path(root) / cfg.output_dir
     out_dir.mkdir(parents=True, exist_ok=True)
     metadata = collect_metadata(device)  # before the data is generated: the code state at start
-    sets = load_datasets(cfg, device, root)
+    sets = load_datasets(cfg, device, root, with_train=with_train)
+    metadata["data_generator"] = D.generator_name(cfg)
+    metadata["data_source"] = str(cfg.data.source)
     metadata["config"] = OmegaConf.to_container(cfg, resolve=True)
     metadata["datasets"] = {split: s["info"] for split, s in sets.items()}
     if cfg.data.source == "stream":
         metadata["datasets"]["train"] = {
             "source": "stream",
+            "generator": D.generator_name(cfg),
             "note": "new Darcy2D samples at every step; NumPy is seeded with the run seed",
         }
     if write_metadata:

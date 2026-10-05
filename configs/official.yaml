@@ -77,6 +77,7 @@ data:
   convergence_threshold: 1.0e-6   # Darcy2D default
   max_iterations: 30000           # Darcy2D default
   generation_batch_size: 64
+  generation_device: auto         # auto: the training device (CPU for MPS); cuda or cpu selects that cache
   test_samples: 256
   seeds:
     train: 1000

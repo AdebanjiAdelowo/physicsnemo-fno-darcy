@@ -101,6 +101,45 @@ def test_package_excludes_checkpoints(study):
     assert not any("checkpoints" in n or n.endswith((".mdlus", ".pt")) for n in names)
 
 
+def test_bundle_holds_final_checkpoints_and_eval_sets(study):
+    import sys
+
+    from fno_darcy.config import REPO_ROOT
+
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    import results as results_script
+
+    cfg, _, out_dir, _ = study
+    names = zipfile.ZipFile(results_script.bundle(out_dir)).namelist()
+    epoch = cfg.training.max_pseudo_epochs
+    assert f"runs/smoke/modes04_seed0/checkpoints/FNO.0.{epoch}.mdlus" in names
+    data = [n for n in names if n.startswith("data/")]
+    assert len(data) == 2 and not any("train_" in n for n in data)
+
+
+def test_verify_recomputes_without_writing(study):
+    from fno_darcy.study import verify_study
+
+    cfg, root, out_dir, _ = study
+    target = out_dir / "modes04_seed0" / "eval_metrics.json"
+    before = target.read_bytes()
+    rows = verify_study(cfg, root)
+    assert max(r["relative_difference"] for r in rows) < 1e-6
+    assert target.read_bytes() == before
+
+
+def test_metadata_names_the_generator(study):
+    _, _, out_dir, summary = study
+    meta = json.loads((out_dir / "study_metadata.json").read_text())
+    assert meta["data_generator"].startswith("IndependentDarcy2D")
+    assert summary["data_generator"] == meta["data_generator"]
+    assert all(d["generator"] == meta["data_generator"] for d in meta["datasets"].values())
+    official = load_config("official")
+    from fno_darcy.data import generator_name
+
+    assert generator_name(official) == "Darcy2D (PhysicsNeMo, as shipped)"
+
+
 def test_unavailable_device_is_an_error():
     if not torch.cuda.is_available():
         with pytest.raises(RuntimeError, match="CUDA is not available"):

@@ -55,6 +55,15 @@ def test_cache_round_trip(cfg, tmp_path):
     assert len(list((tmp_path / cfg.data.dir).glob("*.npz"))) == 2
 
 
+def test_cuda_cache_is_not_regenerated_on_another_device(cfg, tmp_path):
+    """A study generated on CUDA is evaluated elsewhere from its own files, never from regenerated ones."""
+    if torch.cuda.is_available():
+        pytest.skip("needs a machine without CUDA")
+    cuda_cfg = load_config("smoke", ["data.generation_device=cuda"])
+    with pytest.raises(FileNotFoundError, match="generation_device=cuda"):
+        D.load_or_generate(cuda_cfg, "test", 5, "cpu", tmp_path)
+
+
 def test_splits_use_different_seeds(cfg):
     seeds = cfg.data.seeds
     assert len({seeds.train, seeds.validation, seeds.test}) == 3

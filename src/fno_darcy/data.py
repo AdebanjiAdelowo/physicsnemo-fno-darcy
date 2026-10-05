@@ -46,6 +46,24 @@ def warp_device(device: torch.device | str) -> str:
     return "cuda" if torch.device(device).type == "cuda" else "cpu"
 
 
+def generation_device(cfg: DictConfig, device) -> str:
+    """Warp device the data are generated on.
+
+    ``data.generation_device: auto`` follows the training device. An explicit value selects
+    the cache of that device, which is how a study trained on CUDA is re-evaluated on a
+    machine without CUDA from the datasets it was trained with.
+    """
+    name = cfg.data.generation_device
+    return warp_device(device) if name == "auto" else name
+
+
+def generator_name(cfg: DictConfig) -> str:
+    """Human-readable name of the sampler, stored with every dataset and study."""
+    if cfg.data.independent_samples:
+        return "IndependentDarcy2D (this repository: independent Fourier coefficients, upstream solver)"
+    return "Darcy2D (PhysicsNeMo, as shipped)"
+
+
 def make_normaliser(cfg: DictConfig) -> dict:
     """``{"permeability": (mean, std), "darcy": (mean, std)}`` as used upstream."""
     norm = cfg.normaliser
@@ -170,7 +188,7 @@ def make_datapipe(cfg: DictConfig, batch_size: int, device, normaliser: dict | N
         convergence_threshold=cfg.data.convergence_threshold,
         max_iterations=cfg.data.max_iterations,
         normaliser=normaliser,
-        device=warp_device(device),
+        device=generation_device(cfg, device),
     )
 
 
@@ -203,12 +221,13 @@ def generate_split(cfg: DictConfig, n_samples: int, seed: int, device) -> dict:
         "n_samples": int(n_samples),
         "resolution": int(cfg.training.resolution),
         "seed": int(seed),
+        "generator": generator_name(cfg),
         "independent_samples": bool(cfg.data.independent_samples),
         "distinct_permeability_fields": len({f.tobytes() for f in k}),
         "convergence_threshold": float(cfg.data.convergence_threshold),
         "max_iterations": int(cfg.data.max_iterations),
         "generation_batch_size": int(batch_size),
-        "generation_device": warp_device(device),
+        "generation_device": generation_device(cfg, device),
         "physicsnemo_version": physicsnemo.__version__,
         "generation_seconds": seconds,
         "generation_seconds_per_sample": seconds / (len(ks) * batch_size),
@@ -256,7 +275,7 @@ def load_or_generate(cfg: DictConfig, split: str, n_samples: int, device, root: 
         "convergence_threshold": float(cfg.data.convergence_threshold),
         "max_iterations": int(cfg.data.max_iterations),
         "generation_batch_size": int(batch_size),
-        "generation_device": warp_device(device),
+        "generation_device": generation_device(cfg, device),
         "physicsnemo_version": physicsnemo.__version__,
     }
     digest = hashlib.sha1(json.dumps(key, sort_keys=True).encode()).hexdigest()[:10]
@@ -264,8 +283,14 @@ def load_or_generate(cfg: DictConfig, split: str, n_samples: int, device, root: 
     if path.exists():
         with np.load(path) as f:
             out = {"permeability": f["permeability"], "darcy": f["darcy"], "info": json.loads(str(f["info"]))}
+        out["info"].setdefault("generator", generator_name(cfg))
         out["info"]["loaded_from_cache"] = True
     else:
+        if key["generation_device"] == "cuda" and not torch.cuda.is_available():
+            raise FileNotFoundError(
+                f"{path} is missing and cannot be generated here: data.generation_device=cuda needs CUDA. "
+                "Restore the dataset files of the CUDA run into the data directory."
+            )
         out = generate_split(cfg, n_samples, seed, device)
         assert all(out["info"][f] == key[f] for f in _KEY_FIELDS)
         path.parent.mkdir(parents=True, exist_ok=True)

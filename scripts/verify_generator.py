@@ -1,8 +1,9 @@
 """Check what the PhysicsNeMo ``Darcy2D`` generator produces, independently of any model.
 
     python scripts/verify_generator.py
+    python scripts/verify_generator.py --device cuda
 
-Three checks, on CPU:
+Three checks, with the generator on the chosen Warp device (the direct solves always run on CPU):
 
 1. Sample diversity of ``Darcy2D`` as shipped and of ``IndependentDarcy2D``.
 2. Convergence of the multigrid Jacobi iteration: the generated pressure against a sparse
@@ -10,10 +11,12 @@ Three checks, on CPU:
 3. Which continuous problem the stencil represents: the generated pressure against direct
    solves of the conservative Darcy equation and of ``k * laplace(u) = -1``.
 
-Writes ``results/generator_check.json`` and ``figures/generator_check.png``.
+Writes ``results/generator_check.json`` and ``figures/generator_check.png`` for CPU, and
+``results/generator_check_cuda.json`` and ``figures/generator_check_cuda.png`` for CUDA.
 """
 
 import argparse
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -31,12 +34,12 @@ def rel_l2(a: np.ndarray, b: np.ndarray) -> float:
     return float(np.linalg.norm(a - b) / np.linalg.norm(b))
 
 
-def diversity(cls, batch_size: int = 16, n_batches: int = 2) -> dict:
+def diversity(cls, device: str, batch_size: int = 16, n_batches: int = 2) -> dict:
     np.random.seed(SEED)
-    pipe = cls(resolution=32, batch_size=batch_size, device="cpu")
+    pipe = cls(resolution=32, batch_size=batch_size, device=device)
     per_batch, coefficients, fields = [], [], set()
     for _, batch in zip(range(n_batches), pipe):
-        k = batch["permeability"].numpy()
+        k = batch["permeability"].cpu().numpy()
         per_batch.append(len({f.tobytes() for f in k}))
         fields |= {f.tobytes() for f in k}
         coefficients.append(len(np.unique(pipe.rand_fourier.numpy())))
@@ -50,11 +53,11 @@ def diversity(cls, batch_size: int = 16, n_batches: int = 2) -> dict:
     }
 
 
-def solver_check(resolution: int, n_samples: int, thresholds: tuple) -> tuple[dict, dict]:
+def solver_check(resolution: int, n_samples: int, thresholds: tuple, device: str) -> tuple[dict, dict]:
     out = {"resolution": resolution, "n_samples": n_samples, "by_threshold": []}
     for threshold in thresholds:
         np.random.seed(SEED)  # same permeability fields for every threshold
-        pipe = IndependentDarcy2D(resolution=resolution, batch_size=n_samples, device="cpu", convergence_threshold=threshold)
+        pipe = IndependentDarcy2D(resolution=resolution, batch_size=n_samples, device=device, convergence_threshold=threshold)
         next(iter(pipe))
         u = pipe.darcy0.numpy().astype(np.float64)
         k = pipe.permeability.numpy().astype(np.float64)
@@ -98,28 +101,40 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--resolutions", type=int, nargs="+", default=[64, 128, 256])
     parser.add_argument("--samples", type=int, default=4)
+    parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu", help="Warp device of the generator")
+    parser.add_argument("--out-root", type=Path, default=ROOT, help="directory that receives results/ and figures/ (default: the repository)")
     args = parser.parse_args()
+    if args.device == "cuda" and not torch.cuda.is_available():
+        raise SystemExit("--device cuda was requested but CUDA is not available on this machine.")
+    suffix = "" if args.device == "cpu" else f"_{args.device}"
 
     report = {
-        "environment": collect_metadata(torch.device("cpu")),
+        "environment": collect_metadata(torch.device(args.device)),
+        "generator_device": args.device,
         "seed": SEED,
-        "diversity": {"Darcy2D": diversity(Darcy2D), "IndependentDarcy2D": diversity(IndependentDarcy2D)},
+        "diversity": {
+            "Darcy2D": diversity(Darcy2D, args.device),
+            "IndependentDarcy2D": diversity(IndependentDarcy2D, args.device),
+        },
         "solver": [],
     }
+    print(f"generator device: {args.device}" + (f" ({report['environment']['gpu_name']})" if args.device == "cuda" else ""))
     for name, d in report["diversity"].items():
         print(f"{name}: distinct fields per batch of {d['batch_size']}: {d['distinct_fields_per_batch']}, "
               f"distinct coefficient values per batch: {d['distinct_coefficient_values_per_batch']} of {d['coefficients_per_batch']}")
     example = None
     for resolution in args.resolutions:
-        result, ex = solver_check(resolution, args.samples, thresholds=(1e-6, 1e-7))
+        result, ex = solver_check(resolution, args.samples, thresholds=(1e-6, 1e-7), device=args.device)
         report["solver"].append(result)
         example = ex if resolution == 128 or example is None else example
         for e in result["by_threshold"]:
             print(f"resolution {resolution}, tolerance {e['convergence_threshold']:g}: relative L2 against direct solves: "
                   f"own stencil {e['rel_l2_vs_kernel_solve']:.2e}, conservative Darcy {e['rel_l2_vs_flux_solve']:.2e}, "
                   f"k*laplace(u)=-1 {e['rel_l2_vs_laplace_solve']:.2e}")
-    write_json(ROOT / "results" / "generator_check.json", report)
-    plot_example(example, ROOT / "figures" / "generator_check.png")
+    (args.out_root / "figures").mkdir(parents=True, exist_ok=True)
+    write_json(args.out_root / "results" / f"generator_check{suffix}.json", report)
+    plot_example(example, args.out_root / "figures" / f"generator_check{suffix}.png")
+    print(f"written under {args.out_root}: results/generator_check{suffix}.json, figures/generator_check{suffix}.png")
 
 
 if __name__ == "__main__":

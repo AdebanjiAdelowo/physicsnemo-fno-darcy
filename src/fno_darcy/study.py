@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 from omegaconf import DictConfig
 
+from . import data as D
 from . import engine
 from .provenance import write_json
 
@@ -53,7 +54,7 @@ def train_study(cfg: DictConfig, root: Path, resume: bool = False) -> Path:
 
 def evaluate_study(cfg: DictConfig, root: Path) -> dict:
     """Evaluate every run from its checkpoint and write the summary files and plotting fields."""
-    out_dir, device, sets = engine.prepare_study(cfg, root, write_metadata=False)
+    out_dir, device, sets = engine.prepare_study(cfg, root, write_metadata=False, with_train=False)
     n_plot = cfg.evaluation.plot_samples
     fields = {
         "permeability": sets["test"]["permeability"][:n_plot],
@@ -78,6 +79,8 @@ def evaluate_study(cfg: DictConfig, root: Path) -> dict:
         writer.writerows(rows)
     summary = {
         "name": cfg.name,
+        "data_generator": D.generator_name(cfg),
+        "data_source": str(cfg.data.source),
         "device": str(device),
         "evaluation_device_note": "inference times and memory are those of the evaluating device",
         "by_fno_modes": aggregate(rows),
@@ -86,6 +89,25 @@ def evaluate_study(cfg: DictConfig, root: Path) -> dict:
     write_json(out_dir / "summary.json", summary)
     np.savez_compressed(out_dir / "fields.npz", plot_seed=cfg.study.seeds[0], **fields)
     return summary
+
+
+def verify_study(cfg: DictConfig, root: Path) -> list[dict]:
+    """Recompute the test error of every run from its checkpoint and compare with the stored value.
+
+    Nothing is written. Used after results were produced on another machine: the stored
+    timings and memory figures belong to that machine and must not be replaced.
+    """
+    out_dir, device, sets = engine.prepare_study(cfg, root, write_metadata=False, with_train=False)
+    rows = []
+    for modes, seed in engine.study_runs(cfg):
+        run_dir = out_dir / engine.run_name(modes, seed)
+        stored = json.loads((run_dir / "eval_metrics.json").read_text())["test_rel_l2"]["mean"]
+        recomputed = engine.evaluate_run(cfg, modes, run_dir, device, sets, write=False)[0]["test_rel_l2"]["mean"]
+        rows.append(
+            {"run": run_dir.name, "stored": stored, "recomputed": recomputed, "relative_difference": abs(recomputed - stored) / stored}
+        )
+        print(f"[verify] {run_dir.name}: stored {stored:.6e}, recomputed on {device} {recomputed:.6e}", flush=True)
+    return rows
 
 
 def aggregate(rows: list[dict]) -> list[dict]:

@@ -1,7 +1,7 @@
 {
   "environment": {
-    "timestamp_utc": "2026-10-05T20:04:03+00:00",
-    "git_commit": "cfb157c0f33ec801a2e59953e58e3e2d682abb02",
+    "timestamp_utc": "2026-10-05T20:18:59+00:00",
+    "git_commit": "5a68284ce9af749d263201e9ac3f2b860ab948d0",
     "git_dirty": true,
     "device": "cpu",
     "gpu_name": null,
@@ -18,6 +18,7 @@
     "platform": "macOS-26.6.2-arm64-arm-64bit",
     "processor": "arm"
   },
+  "generator_device": "cpu",
   "seed": 0,
   "diversity": {
     "Darcy2D": {
