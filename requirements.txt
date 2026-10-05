@@ -1,0 +1,8 @@
+# PhysicsNeMo is pinned to a commit of the main branch, not to the 2.2.2 release on PyPI:
+# the Darcy2D data generator of 2.2.2 returns NaN fields for resolutions above 32 on CPU
+# (multigrid upsampling defect fixed upstream after the release). See README, "Upstream version".
+nvidia-physicsnemo @ git+https://github.com/NVIDIA/physicsnemo.git@b45a5c810c741e6b41f8515be24c51121f8fc21f
+hydra-core>=1.3.2
+matplotlib>=3.8
+pytest>=8.0
+scipy>=1.11

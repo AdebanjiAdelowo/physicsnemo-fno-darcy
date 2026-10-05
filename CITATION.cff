@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: >-
+  If you use this repository, please cite it and the NVIDIA PhysicsNeMo framework
+  it is built on (see the references section).
+title: "Fourier-mode capacity study of the PhysicsNeMo FNO Darcy-flow example"
+type: software
+authors:
+  - family-names: Adelowo
+    given-names: Adebanji
+license: Apache-2.0
+references:
+  - type: software
+    title: "NVIDIA PhysicsNeMo: An open-source framework for physics-based deep learning in science and engineering"
+    authors:
+      - name: "PhysicsNeMo Contributors"
+    url: "https://github.com/NVIDIA/physicsnemo"
+  - type: article
+    title: "Fourier Neural Operator for Parametric Partial Differential Equations"
+    authors:
+      - family-names: Li
+        given-names: Zongyi
+      - family-names: Kovachki
+        given-names: Nikola
+      - family-names: Azizzadenesheli
+        given-names: Kamyar
+      - family-names: Liu
+        given-names: Burigede
+      - family-names: Bhattacharya
+        given-names: Kaushik
+      - family-names: Stuart
+        given-names: Andrew
+      - family-names: Anandkumar
+        given-names: Anima
+    year: 2021
+    url: "https://arxiv.org/abs/2010.08895"

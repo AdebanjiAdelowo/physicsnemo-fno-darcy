@@ -1,0 +1,17 @@
+physicsnemo-fno-darcy
+Copyright 2026 Adebanji Adelowo
+
+This repository contains material adapted from NVIDIA PhysicsNeMo
+(https://github.com/NVIDIA/physicsnemo), Copyright (c) 2023 - 2026 NVIDIA
+CORPORATION & AFFILIATES, licensed under the Apache License, Version 2.0.
+
+Adapted from examples/cfd/darcy_fno at commit
+b45a5c810c741e6b41f8515be24c51121f8fc21f:
+
+  configs/official.yaml      from config.yaml (keys and values kept; keys added below a marker)
+  src/fno_darcy/model.py     model construction from train_fno_darcy.py
+  src/fno_darcy/engine.py    training loop structure from train_fno_darcy.py
+
+Each of these files carries the original NVIDIA copyright and licence header and
+a statement of the changes. The FNO model, the Darcy2D data generator and the
+training utilities are imported from the PhysicsNeMo package and are not copied.

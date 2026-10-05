@@ -1,0 +1,12 @@
+[project]
+name = "physicsnemo-fno-darcy"
+version = "0.1.0"
+description = "Fourier-mode capacity study of the NVIDIA PhysicsNeMo FNO Darcy-flow example"
+requires-python = ">=3.11,<3.15"
+license = "Apache-2.0"
+authors = [{ name = "Adebanji Adelowo" }]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+filterwarnings = ["ignore::DeprecationWarning"]
