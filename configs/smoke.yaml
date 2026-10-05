@@ -1,0 +1,40 @@
+# Pipeline check. Finishes in well under a minute on a laptop CPU.
+# The numbers it produces are not results.
+defaults:
+  - official
+  - _self_
+
+name: smoke
+device: cpu
+
+arch:
+  fno:
+    latent_channels: 8
+
+scheduler:
+  decay_pseudo_epochs: 1
+
+training:
+  resolution: 32
+  batch_size: 8
+  rec_results_freq: 2
+  max_pseudo_epochs: 2
+  pseudo_epoch_sample_size: 32
+
+validation:
+  sample_size: 16
+  validation_pseudo_epochs: 1
+
+data:
+  source: fixed
+  independent_samples: true
+  generation_batch_size: 16
+  test_samples: 16
+
+study:
+  fno_modes: [4, 8]
+  seeds: [0]
+
+evaluation:
+  timing_warmup: 1
+  timing_repeats: 3

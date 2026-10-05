@@ -1,0 +1,34 @@
+# Fourier-mode study at the upstream resolution, sized for one NVIDIA GPU session.
+# Architecture, batch size and optimiser as upstream. The training set is finite
+# and shared by all models, and the reference solver tolerance is tightened.
+defaults:
+  - official
+  - _self_
+
+name: full
+device: cuda
+
+scheduler:
+  decay_pseudo_epochs: 4
+
+training:
+  resolution: 256
+  batch_size: 64
+  rec_results_freq: 10
+  max_pseudo_epochs: 60
+  pseudo_epoch_sample_size: 4096
+
+validation:
+  sample_size: 256
+  validation_pseudo_epochs: 2
+
+data:
+  source: fixed
+  independent_samples: true
+  convergence_threshold: 1.0e-7
+  generation_batch_size: 64
+  test_samples: 512
+
+study:
+  fno_modes: [4, 8, 12, 16]
+  seeds: [0, 1, 2]

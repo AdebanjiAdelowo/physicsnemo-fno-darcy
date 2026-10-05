@@ -12,6 +12,10 @@ b45a5c810c741e6b41f8515be24c51121f8fc21f:
   src/fno_darcy/model.py     model construction from train_fno_darcy.py
   src/fno_darcy/engine.py    training loop structure from train_fno_darcy.py
 
+Adapted from physicsnemo/datapipes/benchmarks/darcy.py at the same commit:
+
+  src/fno_darcy/data.py      IndependentDarcy2D.initialize_batch from Darcy2D.initialize_batch
+
 Each of these files carries the original NVIDIA copyright and licence header and
 a statement of the changes. The FNO model, the Darcy2D data generator and the
 training utilities are imported from the PhysicsNeMo package and are not copied.

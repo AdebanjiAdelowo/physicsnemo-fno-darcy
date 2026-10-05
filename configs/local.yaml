@@ -1,0 +1,32 @@
+# Reduced-resolution Fourier-mode study that runs on a laptop (CPU or Apple MPS).
+# Architecture as upstream; resolution, data budget and schedule are reduced.
+defaults:
+  - official
+  - _self_
+
+name: local
+
+scheduler:
+  decay_pseudo_epochs: 3
+
+training:
+  resolution: 64
+  batch_size: 32
+  rec_results_freq: 10
+  max_pseudo_epochs: 30
+  pseudo_epoch_sample_size: 1024
+
+validation:
+  sample_size: 128
+  validation_pseudo_epochs: 1
+
+data:
+  source: fixed
+  independent_samples: true
+  convergence_threshold: 1.0e-7
+  generation_batch_size: 32
+  test_samples: 256
+
+study:
+  fno_modes: [4, 8, 12, 16]
+  seeds: [0, 1, 2]
