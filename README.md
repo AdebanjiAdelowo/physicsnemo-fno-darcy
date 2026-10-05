@@ -4,6 +4,18 @@ A parameter study built on the Fourier Neural Operator (FNO) Darcy-flow example 
 
 **Question.** How does the Fourier representation, and with it the model capacity, affect the accuracy and the computational cost of an FNO surrogate for Darcy flow?
 
+## Status of the results
+
+| Study | Configuration | Data generator | Device | Status |
+|---|---|---|---|---|
+| Reduced study, 64 × 64 | `configs/local.yaml` | `IndependentDarcy2D` | Apple MPS | **run**; all numbers in [Results](#results) come from it |
+| Generator checks | `scripts/verify_generator.py` | both | CPU | **run** |
+| Generator checks | `scripts/verify_generator.py --device cuda` | both | CUDA | pending |
+| Main study, 256 × 256 | `configs/full.yaml` | `IndependentDarcy2D` | CUDA | pending |
+| Upstream-behaviour control | `configs/official.yaml` | `Darcy2D` as shipped | CUDA | pending |
+
+No CUDA result of any kind is reported in this repository yet.
+
 ## Motivation
 
 A neural operator learns the map from a coefficient field to the solution of a PDE, so that a new coefficient field is solved by one forward pass. In an FNO each layer applies a learned linear operator to the lowest Fourier modes of its input and discards the rest. The number of retained modes is therefore the main capacity setting of the architecture: it fixes the spatial scales the spectral layers can act on, and the parameter count grows with its square. The Darcy problem with a piecewise-constant permeability is a common test because the input is discontinuous while the solution is smooth.
@@ -16,7 +28,7 @@ $$-\nabla\cdot\bigl(k(x)\,\nabla u(x)\bigr) = 1 \quad \text{in } \Omega = (0,1)^
 
 with permeability $k$ taking the values 0.5 and 2 and pressure $u$. The operator to learn is $k \mapsto u$.
 
-The reference fields come from PhysicsNeMo's `Darcy2D` generator, which solves a discretisation of the non-conservative form $k\,\Delta u + \nabla k\cdot\nabla u + 1 = 0$. The stencil it iterates does not converge to the equation above for discontinuous $k$; see [Dataset](#dataset). The models in this repository learn the operator defined by that generator.
+The reference fields come from PhysicsNeMo's `Darcy2D` generator, which solves a discretisation of the non-conservative form $k\,\Delta u + \nabla k\cdot\nabla u + 1 = 0$. The stencil it iterates does not converge to the equation above for discontinuous $k$; see [Dataset](#dataset). The solver is used unchanged. **The learning target in this repository is therefore NVIDIA's discrete operator, the map from $k$ to the output of `Darcy2D`'s solver, and not the conservative discretisation of $-\nabla\cdot(k\nabla u) = 1$.**
 
 ## Model
 
@@ -61,6 +73,21 @@ Extensions and experiments in this repository:
 6. **Generator checks.** `scripts/verify_generator.py` compares the generated fields with independent sparse direct solves.
 7. **Explicit device.** The original constructs `Darcy2D` with its default device `"cuda"`. Here the device is a configuration key, so the pipeline also runs on CPU and Apple MPS (Warp generates on CPU in the MPS case).
 
+### Two data generators
+
+The repository contains two samplers of the permeability field. They share the upstream solver and differ only in how the Fourier coefficients are drawn.
+
+| | `Darcy2D` | `IndependentDarcy2D` |
+|---|---|---|
+| Origin | PhysicsNeMo, unmodified | this repository, a subclass of `Darcy2D` overriding `initialize_batch` |
+| Coefficient draw | Warp kernel `init_uniform_random_4d` | `numpy.random.uniform(-1, 1)` |
+| Distinct fields in a batch (CPU) | 1 | all |
+| Solver | upstream multigrid Jacobi | the same upstream multigrid Jacobi |
+| Selected by | `data.independent_samples: false` | `data.independent_samples: true` |
+| Used in | `configs/official.yaml` (control) | `configs/smoke.yaml`, `configs/local.yaml`, `configs/full.yaml` (the study) |
+
+`configs/official.yaml` is the control for upstream behaviour: upstream architecture, schedule, streaming data, default solver tolerance and the unmodified `Darcy2D`. It is kept free of this repository's changes to the data so that a run of it reproduces what the NVIDIA example trains on. Every study writes the name of its generator to `study_metadata.json` and `summary.json` (`data_generator`) and to each dataset record (`generator`, `independent_samples`, `distinct_permeability_fields`).
+
 Not carried over from the original: the `LaunchLogger` and MLFlow logging, the validation figure of `validator.py`, and resumption from a checkpoint inside a run.
 
 ## Dataset
@@ -76,7 +103,7 @@ No external dataset is used. `Darcy2D` draws Fourier coefficients on $[-1, 1]$, 
 | `Darcy2D` as shipped | 1 | 4 of 1600 |
 | `IndependentDarcy2D` (this repository) | 16 | 1600 of 1600 |
 
-As shipped, all samples of a batch are the same field, and all frequencies of a sample share one amplitude per trigonometric component. The same four-of-many pattern was reproduced with a standalone kernel on Warp 1.5.1, 1.10.1, 1.14.0, 1.16.0, 1.17.0 and 1.18.0 on CPU. It was not tested on CUDA. `IndependentDarcy2D` draws the coefficients from NumPy with the same range and leaves the synthesis, the thresholding and the solver to the upstream kernels. All studies in this repository use it; `configs/official.yaml` keeps the upstream behaviour.
+As shipped, all samples of a batch are the same field, and all frequencies of a sample share one amplitude per trigonometric component. The same four-of-many pattern was reproduced with a standalone kernel on Warp 1.5.1, 1.10.1, 1.14.0, 1.16.0, 1.17.0 and 1.18.0 on CPU. **It has not been tested on CUDA.** Whether the Warp CUDA backend behaves the same way is the first step of the GPU workflow below (`scripts/verify_generator.py --device cuda`), and the statements in this section hold for CPU until that check is recorded. `IndependentDarcy2D` draws the coefficients from NumPy with the same range and leaves the synthesis, the thresholding and the solver to the upstream kernels. All studies in this repository use it; `configs/official.yaml` keeps the upstream behaviour.
 
 **2. Solver tolerance.** The Jacobi iteration stops when the largest update falls below `convergence_threshold`. The table gives the relative $L^2$ difference between the generated pressure and a sparse direct solve of the same stencil (mean of 4 samples):
 
@@ -102,7 +129,7 @@ The generated fields solve the kernel's stencil, differ from the conservative Da
 
 *One permeability field at 128 × 128. The two pressure fields share a colour scale.*
 
-The reference data of this benchmark are therefore the output of a specific discrete operator and not a solution of the Darcy equation in divergence form. This does not affect the comparison between models, which are all trained and tested on the same operator, but the errors reported below are errors against the generator and not against Darcy flow.
+The reference data of this benchmark are therefore the output of a specific discrete operator and not a solution of the Darcy equation in divergence form. The solver is deliberately left as NVIDIA ships it, because the subject of this repository is the official example. This does not affect the comparison between models, which are all trained and tested on the same operator, but the errors reported below are errors against the generator and not against Darcy flow.
 
 ## Experimental design
 
@@ -172,17 +199,44 @@ python scripts/train.py --config official
 
 `--resume` skips runs that already finished. Neither of the two CUDA configurations has been run for this repository.
 
-[`kaggle/run_cuda.ipynb`](kaggle/run_cuda.ipynb) is a launcher for a Kaggle GPU session (accelerator: an NVIDIA GPU, internet: on). It checks out the commit given as `REF` (a full 40-character SHA), installs the requirements, runs the tests and a CUDA smoke study, and trains the 16-mode model for one pseudo-epoch to print a runtime projection. With `RUN_FULL = False`, the default, it stops there. With `RUN_FULL = True` it runs `configs/full.yaml` and writes `/kaggle/working/physicsnemo-fno-darcy-full.zip`. The notebook contains no training code. It has been checked statically (`tests/test_notebook.py`) and has not been executed on Kaggle.
+### GPU workflow on Kaggle
 
-To bring results from a GPU machine into the repository:
+[`kaggle/run_cuda.ipynb`](kaggle/run_cuda.ipynb) is a launcher: it checks out one commit of this repository and calls its scripts. It contains no model or training code. It has been checked statically (`tests/test_notebook.py`) and has not been executed on Kaggle.
+
+1. Create a Kaggle notebook from `kaggle/run_cuda.ipynb`. Session options: **Accelerator** an NVIDIA GPU, **Internet** on.
+2. In the first code cell set `REF` to the full 40-character SHA of the commit to run (`git rev-parse HEAD`). Branch and tag names are refused. The notebook checks that the checked-out commit is `REF` and that the tree is clean. For a private repository, store a GitHub token as a Kaggle secret and put the name of the secret in `GITHUB_TOKEN_SECRET`.
+3. Set `SESSION_BUDGET_HOURS` to the GPU time available for the session, and `RUN_FULL` and `RUN_OFFICIAL` as needed.
+4. Run all.
+
+| Step | Command run by the notebook | Runs when | Output in `/kaggle/working` |
+|---|---|---|---|
+| A | `python scripts/verify_generator.py --device cuda` | always, before any training | `physicsnemo-fno-darcy-generator-check-cuda.zip` |
+| | `python -m pytest -q`, a CUDA smoke study, a one-pseudo-epoch timing probe | always | |
+| B | `python scripts/train.py --config full --resume` | `RUN_FULL = True` | `physicsnemo-fno-darcy-full.zip`, `physicsnemo-fno-darcy-full-eval-bundle.zip` |
+| C | `python scripts/train.py --config official --resume` | `RUN_OFFICIAL = True`, after B has completed | `physicsnemo-fno-darcy-official.zip`, `physicsnemo-fno-darcy-official-eval-bundle.zip` |
+
+Step A records the GPU model and the CUDA, Warp, PyTorch and PhysicsNeMo versions together with the sample-diversity and stencil checks, and prints whether the repeated-batch behaviour of `Darcy2D` is reproduced on CUDA. Its files are written outside the clone, so the studies record a clean tree.
+
+Before B and before C the notebook projects the runtime from a one-pseudo-epoch probe and compares it with what is left of `SESSION_BUDGET_HOURS`. If the projection does not fit, the step is not started and the configuration is not reduced; the notebook prints the projection and finishes. With both flags `False`, the default, the notebook ends after the probe with `KAGGLE CUDA CHECKS COMPLETE. No full study was run.`
+
+Each study produces two archives. `<name>.zip` holds the JSON and CSV records and the plotted fields that are tracked in `results/`. `<name>-eval-bundle.zip` holds the final checkpoint of every run and the validation and test sets generated on the GPU, and is not tracked; it allows the errors to be recomputed on another machine.
+
+### Integrating GPU results
+
+From the repository root, with the archives downloaded to `~/Downloads`:
 
 ```bash
-python scripts/results.py package runs/full          # on the GPU machine: writes runs/full.zip
-python scripts/results.py publish runs/full.zip      # locally: writes results/full/
+unzip ~/Downloads/physicsnemo-fno-darcy-generator-check-cuda.zip -d .
+cp ~/Downloads/physicsnemo-fno-darcy-full.zip runs/full.zip
+python scripts/results.py publish runs/full.zip
+unzip ~/Downloads/physicsnemo-fno-darcy-full-eval-bundle.zip -d .
+unzip runs/full.zip -d runs
+python scripts/evaluate.py --config full --verify device=mps data.generation_device=cuda
 python scripts/plot_results.py --study results/full --out figures
+python -m pytest -q
 ```
 
-The archive holds the JSON and CSV records and the plotted fields, without checkpoints or datasets.
+`--verify` recomputes the test error of every run from its checkpoint on the GPU-generated test set and compares it with the stored value. It writes nothing, so the timings and memory figures of the GPU run are kept. `data.generation_device=cuda` selects the datasets of the GPU run; if they are missing, the command stops and does not regenerate them on another device. Replace `device=mps` by `device=cpu` on a machine without MPS. The same commands with `official` in place of `full` integrate step C.
 
 ## Evaluation
 
@@ -194,11 +248,13 @@ python scripts/plot_results.py --study runs/local --out runs/local/figures
 python scripts/verify_generator.py
 ```
 
-`evaluate.py` writes `summary.csv`, `summary.json` and `fields.npz` to the study directory. [`results/README.md`](results/README.md) describes the files.
+`evaluate.py` writes `summary.csv`, `summary.json` and `fields.npz` to the study directory. With `--verify` it recomputes the test errors from the checkpoints, compares them with the stored values and writes nothing. [`results/README.md`](results/README.md) describes the files.
 
 ## Results
 
-Reduced study (`configs/local.yaml`): 64 × 64 grid, 1024 training samples, 30 pseudo-epochs (960 optimiser steps), 256 test samples, three seeds, Apple M3 Pro with MPS. Source: [`results/local/summary.csv`](results/local/summary.csv). Values are mean ± sample standard deviation over the three seeds.
+### Reduced study (run)
+
+`configs/local.yaml`, data from `IndependentDarcy2D`: 64 × 64 grid, 1024 training samples, 30 pseudo-epochs (960 optimiser steps), 256 test samples, three seeds, Apple M3 Pro with MPS. Source: [`results/local/summary.csv`](results/local/summary.csv). Values are mean ± sample standard deviation over the three seeds.
 
 | Fourier modes | Parameters | Test relative $L^2$ error | Range over seeds | Final training loss | Test MSE | Optimisation time | Inference per sample |
 |---|---|---|---|---|---|---|---|
@@ -209,9 +265,19 @@ Reduced study (`configs/local.yaml`): 64 × 64 grid, 1024 training samples, 30 p
 
 Losses are mean squared errors of the normalised pressure. Inference times are for a batch of 32 on MPS, divided by 32. The error of the reference solver at this resolution and tolerance is 0.045% (see [Dataset](#dataset)).
 
-The studies of `configs/full.yaml` (256 × 256, CUDA) and `configs/official.yaml` (upstream settings) have not been run. No results are reported for them, and no CUDA timing or memory measurement exists in this repository.
+### Main study and upstream control (pending)
+
+| Study | Test relative $L^2$ error | Timings and memory |
+|---|---|---|
+| `configs/full.yaml`, 256 × 256, modes 4, 8, 12, 16, three seeds, `IndependentDarcy2D`, CUDA | pending | pending |
+| `configs/official.yaml`, 256 × 256, 12 modes, one seed, `Darcy2D` as shipped, CUDA | pending | pending |
+| Generator checks on CUDA | pending | |
+
+Neither study has been run. The reduced study is at a different resolution, data budget and device, and its numbers do not stand in for these.
 
 ## Figures
+
+All figures are from the reduced study.
 
 ![Error against Fourier modes](figures/local_error_vs_modes.png)
 
@@ -231,7 +297,7 @@ The studies of `configs/full.yaml` (256 × 256, CUDA) and `configs/official.yaml
 
 ## Interpretation
 
-These statements are for the reduced study: one grid, 1024 training samples and 960 optimiser steps.
+These statements are for the reduced study only: one 64 × 64 grid, 1024 training samples and 960 optimiser steps.
 
 - **Accuracy saturates at 8 modes.** Going from 4 to 8 modes lowers the test error from 1.46% to 0.92%, and the ranges over seeds do not overlap. Between 8, 12 and 16 modes the means differ by less than the spread over seeds at 8 modes.
 - **More modes add parameters without adding accuracy here.** From 8 to 16 modes the parameter count grows by a factor of 4.0, from 1.05 to 4.20 million, with no measurable change of the error. The spectral weights account for nearly all parameters: each of the four layers holds $2 \times 32^2 \times m^2$ complex coefficients for $m$ modes.
@@ -246,6 +312,7 @@ The validation error is still decreasing at the last pseudo-epoch for every sett
 
 - The reference data are the output of the `Darcy2D` generator, which does not solve the Darcy equation in divergence form (see [Dataset](#dataset)). The fields it produces are smooth across permeability interfaces, without the kinks of a flux-continuous solution. The number of modes needed for flux-continuous data may differ.
 - Results exist only for the reduced study at 64 × 64. The upstream resolution and the upstream training protocol have not been run.
+- The study and the upstream control use different samplers (`IndependentDarcy2D` and `Darcy2D`), data budgets and solver tolerances. Once both exist, their errors are not directly comparable: the control measures the upstream example as it is, on the data it generates.
 - Fixed training budget, not converged; one learning-rate schedule; no tuning per setting.
 - Three seeds per setting.
 - Only the number of modes is varied. Latent width, depth and padding interact with it and are held at the upstream values.
@@ -260,7 +327,7 @@ The validation error is still decreasing at the last pseudo-epoch for every sett
 - Seeds: datasets 1000 (training), 2000 (validation), 3000 (test); runs 0, 1, 2. Models are initialised on CPU and then moved to the device, and batch order comes from a CPU generator.
 - Generation is reproducible for a given seed and device (`tests/test_data.py`); a CPU training run repeats its final loss to a relative tolerance of $10^{-5}$ (`tests/test_pipeline.py`). Results on different devices are not bitwise identical.
 - Datasets are cached under `data/` with a key that covers the resolution, sample count, seed, sampler, solver settings, device and PhysicsNeMo version. `data/`, `runs/` and checkpoints are not tracked.
-- The record of the reduced study names commit `cfb157c` with a modified tree. The files under `src/` and `configs/` at that commit are the ones that ran; the modification was an untracked documentation file.
+- [`results/local/study_metadata.json`](results/local/study_metadata.json) records commit `cfb157c` with `git_dirty: true`, and is kept as written. The code that ran was loaded at commit `37a50d4`; `cfb157c` was committed while the datasets were being generated and added only tests, the Kaggle launcher and `scripts/verify_generator.py`, so `src/` and `configs/` are identical in both commits (`git diff 37a50d4 cfb157c -- src configs` is empty). The tree was reported as modified because `results/README.md`, a documentation file, existed untracked at that moment. Neither affected the executed code. The environment record is now taken before data generation starts. The record of the reduced study predates the `data_generator` key; its generator is identified by `independent_samples: true` in the configuration and in each dataset record.
 
 Repository layout:
 
