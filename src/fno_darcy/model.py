@@ -48,12 +48,15 @@ def build_fno(cfg: DictConfig, fno_modes: int | None = None) -> FNO:
 
 
 def max_fno_modes(resolution: int, padding: int) -> int:
-    """Largest number of modes the spectral convolution can retain.
+    """Largest number of modes the spectral convolution retains without counting a mode twice.
 
-    The layer keeps ``modes`` coefficients of the real FFT of the padded grid, which has
-    ``(resolution + padding) // 2 + 1`` coefficients in its last dimension.
+    On the padded grid of ``n = resolution + padding`` points the layer keeps rows ``[:modes]``
+    and ``[-modes:]`` of the full FFT dimension with two separate weight blocks, and columns
+    ``[:modes]`` of the real-FFT dimension (``n // 2 + 1`` columns). The two row blocks are
+    disjoint only for ``2 * modes <= n``. At ``n // 2 + 1`` the layer still runs, but the middle
+    row is multiplied by both blocks; one more mode exceeds the real-FFT dimension and fails.
     """
-    return (resolution + padding) // 2 + 1
+    return (resolution + padding) // 2
 
 
 def count_parameters(model) -> int:

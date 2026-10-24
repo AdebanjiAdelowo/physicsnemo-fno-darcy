@@ -152,7 +152,7 @@ One factor is varied: the number of Fourier modes per dimension, 4, 8, 12 and 16
 | Device | CPU | CUDA, MPS or CPU | CUDA | CUDA |
 | Run in this repository | yes | yes | no | no |
 
-The largest admissible number of modes is $\lfloor (N + 9)/2 \rfloor + 1$ for an $N \times N$ grid with padding 9; a study that exceeds it is rejected before training.
+The largest number of modes that the spectral layer retains without counting a mode twice is $\lfloor (N + 9)/2 \rfloor$ for an $N \times N$ grid with padding 9 (36 at $N = 64$, 132 at $N = 256$); a study that exceeds it is rejected before training. Up to commit `5c81978` the bound was $\lfloor (N + 9)/2 \rfloor + 1$, which admits one setting where the middle row of the Fourier transform passes through both weight blocks of the layer. No configuration of this repository uses it, so no result is affected ([`docs/SCIENTIFIC_AUDIT.md`](docs/SCIENTIFIC_AUDIT.md)).
 
 Metrics per run: training loss per pseudo-epoch, validation loss and validation relative $L^2$ error, test relative $L^2$ error
 

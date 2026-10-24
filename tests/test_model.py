@@ -2,6 +2,7 @@ import pytest
 import torch
 from fno_darcy.config import load_config
 from fno_darcy.model import build_fno, count_parameters, max_fno_modes
+from physicsnemo.nn.module.spectral_layers import SpectralConv2d
 
 
 @pytest.mark.parametrize("modes", [4, 8, 12, 16])
@@ -37,4 +38,25 @@ def test_max_fno_modes_is_the_architectural_limit():
     limit = max_fno_modes(res, pad)
     build_fno(cfg, limit)(torch.randn(1, 1, res, res))
     with pytest.raises(RuntimeError):
-        build_fno(cfg, limit + 1)(torch.randn(1, 1, res, res))
+        build_fno(cfg, limit + 2)(torch.randn(1, 1, res, res))
+
+
+def _spectral_gain(n: int, modes: int) -> torch.Tensor:
+    """Gain per retained Fourier coefficient of a spectral layer whose two weight blocks are the identity."""
+    layer = SpectralConv2d(1, 1, modes, modes)
+    with torch.no_grad():
+        for w in (layer.weights1, layer.weights2):
+            w.zero_()
+            w[..., 0] = 1.0
+    x = torch.randn(1, 1, n, n, generator=torch.Generator().manual_seed(0))
+    # columns >= 1 only: column 0 is folded by the Hermitian symmetry of irfft2
+    return (torch.fft.rfft2(layer(x)) / torch.fft.rfft2(x))[0, 0, :, 1:modes].real
+
+
+@pytest.mark.parametrize("res", [16, 64, 256])
+def test_max_fno_modes_counts_every_mode_once(res):
+    """Regression: the former limit ``n // 2 + 1`` passed the middle row through both weight blocks."""
+    n = res + 9
+    limit = max_fno_modes(res, 9)
+    assert torch.allclose(_spectral_gain(n, limit).abs().max(), torch.tensor(1.0), atol=1e-4)
+    assert _spectral_gain(n, limit + 1).max() > 1.9
