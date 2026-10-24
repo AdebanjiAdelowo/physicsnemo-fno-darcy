@@ -19,6 +19,9 @@ Studies present:
 | Study | Configuration | Data generator | Status |
 |---|---|---|---|
 | `local` | `configs/local.yaml`, 64 × 64 grid, Apple MPS | `IndependentDarcy2D` | run, see the README of the repository |
+| `audit_seeds345` | `configs/local.yaml` with `study.seeds=[3,4,5]`, Apple MPS, commit `5c81978`; timings affected by concurrent work, not reported | `IndependentDarcy2D` | run |
+| `audit_long90` | `configs/local.yaml` with `training.max_pseudo_epochs=90 scheduler.decay_pseudo_epochs=9 study.fno_modes=[8,12,16] study.seeds=[0]`, Apple MPS, commit `c7cb072` | `IndependentDarcy2D` | run |
+| `audit/` | outputs of `scripts/audit_results.py`, `scripts/audit_checkpoints.py`, `scripts/audit_data.py` | | see `docs/SCIENTIFIC_AUDIT.md` |
 | `full` | `configs/full.yaml`, 256 × 256 grid, CUDA | `IndependentDarcy2D` | pending |
 | `official` | `configs/official.yaml`, upstream settings, CUDA | `Darcy2D` as shipped | pending |
 
