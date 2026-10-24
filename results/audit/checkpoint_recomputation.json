@@ -1,0 +1,137 @@
+{
+  "study": "runs/local",
+  "device": "cpu",
+  "test_file": "test_r64_n256_1c531c8f19.npz",
+  "runs": [
+    {
+      "run": "modes04_seed0",
+      "checkpoint_pseudo_epoch": 30,
+      "recomputed_mean": 0.015100015906077098,
+      "stored_mean": 0.015100074699148536,
+      "relative_difference_of_mean": 3.8935616285831225e-06,
+      "max_abs_per_sample_difference": 6.194548813637929e-07
+    },
+    {
+      "run": "modes04_seed1",
+      "checkpoint_pseudo_epoch": 30,
+      "recomputed_mean": 0.012873901272538903,
+      "stored_mean": 0.012873794043116504,
+      "relative_difference_of_mean": 8.329279001943215e-06,
+      "max_abs_per_sample_difference": 7.324283518919672e-07
+    },
+    {
+      "run": "modes04_seed2",
+      "checkpoint_pseudo_epoch": 30,
+      "recomputed_mean": 0.01577275207580841,
+      "stored_mean": 0.015772818402183475,
+      "relative_difference_of_mean": 4.205106111957482e-06,
+      "max_abs_per_sample_difference": 7.260756771307331e-07
+    },
+    {
+      "run": "modes08_seed0",
+      "checkpoint_pseudo_epoch": 30,
+      "recomputed_mean": 0.010308196237971145,
+      "stored_mean": 0.010308488981536357,
+      "relative_difference_of_mean": 2.8398300249063644e-05,
+      "max_abs_per_sample_difference": 7.334929749223257e-07
+    },
+    {
+      "run": "modes08_seed1",
+      "checkpoint_pseudo_epoch": 30,
+      "recomputed_mean": 0.007960032813560102,
+      "stored_mean": 0.007959981912790681,
+      "relative_difference_of_mean": 6.394583552855875e-06,
+      "max_abs_per_sample_difference": 7.325788680765527e-07
+    },
+    {
+      "run": "modes08_seed2",
+      "checkpoint_pseudo_epoch": 30,
+      "recomputed_mean": 0.009316545357103603,
+      "stored_mean": 0.009316666197264567,
+      "relative_difference_of_mean": 1.297032204501124e-05,
+      "max_abs_per_sample_difference": 6.666090951561177e-07
+    },
+    {
+      "run": "modes12_seed0",
+      "checkpoint_pseudo_epoch": 30,
+      "recomputed_mean": 0.009680835571352853,
+      "stored_mean": 0.009680992105131736,
+      "relative_difference_of_mean": 1.6169187742688577e-05,
+      "max_abs_per_sample_difference": 6.341151767477043e-07
+    },
+    {
+      "run": "modes12_seed1",
+      "checkpoint_pseudo_epoch": 30,
+      "recomputed_mean": 0.009635945263425757,
+      "stored_mean": 0.00963590537685377,
+      "relative_difference_of_mean": 4.139369413284577e-06,
+      "max_abs_per_sample_difference": 7.060314629256381e-07
+    },
+    {
+      "run": "modes12_seed2",
+      "checkpoint_pseudo_epoch": 30,
+      "recomputed_mean": 0.010054441690950365,
+      "stored_mean": 0.010054523148937733,
+      "relative_difference_of_mean": 8.101626119993596e-06,
+      "max_abs_per_sample_difference": 5.230729956066243e-07
+    },
+    {
+      "run": "modes16_seed0",
+      "checkpoint_pseudo_epoch": 30,
+      "recomputed_mean": 0.00955478824028499,
+      "stored_mean": 0.009554953063343419,
+      "relative_difference_of_mean": 1.7250012358662822e-05,
+      "max_abs_per_sample_difference": 5.729174241287521e-07
+    },
+    {
+      "run": "modes16_seed1",
+      "checkpoint_pseudo_epoch": 30,
+      "recomputed_mean": 0.009763204384784483,
+      "stored_mean": 0.009763144653334166,
+      "relative_difference_of_mean": 6.118054421815145e-06,
+      "max_abs_per_sample_difference": 6.729553304468672e-07
+    },
+    {
+      "run": "modes16_seed2",
+      "checkpoint_pseudo_epoch": 30,
+      "recomputed_mean": 0.009768969934944137,
+      "stored_mean": 0.009769111185960355,
+      "relative_difference_of_mean": 1.4458942428826404e-05,
+      "max_abs_per_sample_difference": 6.13876938259858e-07
+    }
+  ],
+  "parameters": [
+    {
+      "fno_modes": 4,
+      "parameters": 268017,
+      "spectral_weights": 262144,
+      "spectral_fraction": 0.9780872108858767
+    },
+    {
+      "fno_modes": 8,
+      "parameters": 1054449,
+      "spectral_weights": 1048576,
+      "spectral_fraction": 0.9944302664235065
+    },
+    {
+      "fno_modes": 12,
+      "parameters": 2365169,
+      "spectral_weights": 2359296,
+      "spectral_fraction": 0.9975168793435056
+    },
+    {
+      "fno_modes": 16,
+      "parameters": 4200177,
+      "spectral_weights": 4194304,
+      "spectral_fraction": 0.9986017255939452
+    }
+  ],
+  "non_spectral_parameters_independent_of_modes": true,
+  "mode_limit": {
+    "padded_grid": 73,
+    "validator_accepts_up_to": 36,
+    "largest_non_overlapping": 36,
+    "overlap_for_largest_accepted": false
+  },
+  "largest_relative_difference": 2.8398300249063644e-05
+}

@@ -1,0 +1,177 @@
+{
+  "studies": [
+    "results/local"
+  ],
+  "optimiser_steps": 960,
+  "by_fno_modes": [
+    {
+      "fno_modes": 4,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "parameters": 268017,
+      "per_seed_test_rel_l2": [
+        0.015100074699148536,
+        0.012873794043116504,
+        0.015772818402183475
+      ],
+      "mean": 0.014582229048149506,
+      "std_over_seeds": 0.0015173030835366652,
+      "t95_interval_of_mean": [
+        0.010813039238181013,
+        0.018351418858117998
+      ],
+      "readme_claim": 0.01458,
+      "max_abs_diff_recomputed_vs_stored_run_mean": 0.0,
+      "mean_test_sampling_se_per_run": 0.0002696678049296259,
+      "mean_last5_validation_jitter_std": 0.00045247919730337865,
+      "runs_with_validation_still_decreasing": 3
+    },
+    {
+      "fno_modes": 8,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "parameters": 1054449,
+      "per_seed_test_rel_l2": [
+        0.010308488981536357,
+        0.007959981912790681,
+        0.009316666197264567
+      ],
+      "mean": 0.009195045697197202,
+      "std_over_seeds": 0.0011789677784038793,
+      "t95_interval_of_mean": [
+        0.006266327377925618,
+        0.012123764016468785
+      ],
+      "readme_claim": 0.0092,
+      "max_abs_diff_recomputed_vs_stored_run_mean": 0.0,
+      "mean_test_sampling_se_per_run": 0.00018821418355380022,
+      "mean_last5_validation_jitter_std": 0.0004049111312449096,
+      "runs_with_validation_still_decreasing": 3
+    },
+    {
+      "fno_modes": 12,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "parameters": 2365169,
+      "per_seed_test_rel_l2": [
+        0.009680992105131736,
+        0.00963590537685377,
+        0.010054523148937733
+      ],
+      "mean": 0.00979047354364108,
+      "std_over_seeds": 0.00022978217687560427,
+      "t95_interval_of_mean": [
+        0.009219662972576306,
+        0.010361284114705853
+      ],
+      "readme_claim": 0.00979,
+      "max_abs_diff_recomputed_vs_stored_run_mean": 0.0,
+      "mean_test_sampling_se_per_run": 0.0002303089187671359,
+      "mean_last5_validation_jitter_std": 0.0003629159220109892,
+      "runs_with_validation_still_decreasing": 3
+    },
+    {
+      "fno_modes": 16,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "parameters": 4200177,
+      "per_seed_test_rel_l2": [
+        0.009554953063343419,
+        0.009763144653334166,
+        0.009769111185960355
+      ],
+      "mean": 0.009695736300879313,
+      "std_over_seeds": 0.00012195835295792955,
+      "t95_interval_of_mean": [
+        0.009392774957033563,
+        0.009998697644725062
+      ],
+      "readme_claim": 0.0097,
+      "max_abs_diff_recomputed_vs_stored_run_mean": 0.0,
+      "mean_test_sampling_se_per_run": 0.0002503544054031697,
+      "mean_last5_validation_jitter_std": 0.00038773260984134773,
+      "runs_with_validation_still_decreasing": 3
+    }
+  ],
+  "comparisons": [
+    {
+      "a": 4,
+      "b": 8,
+      "mean_difference_a_minus_b": 0.005387183350952304,
+      "welch_t_p": 0.009632504713101855,
+      "seed_permutation_p": 0.1,
+      "ranges_overlap": false,
+      "paired_per_sample_mean_difference": 0.005387183350952304,
+      "paired_per_sample_fraction_a_better": 0.0,
+      "paired_wilcoxon_p": 9.6404185138958e-44
+    },
+    {
+      "a": 4,
+      "b": 12,
+      "mean_difference_a_minus_b": 0.004791755504508426,
+      "welch_t_p": 0.02947786535973733,
+      "seed_permutation_p": 0.1,
+      "ranges_overlap": false,
+      "paired_per_sample_mean_difference": 0.004791755504508425,
+      "paired_per_sample_fraction_a_better": 0.0,
+      "paired_wilcoxon_p": 9.6404185138958e-44
+    },
+    {
+      "a": 4,
+      "b": 16,
+      "mean_difference_a_minus_b": 0.004886492747270193,
+      "welch_t_p": 0.02998545381017963,
+      "seed_permutation_p": 0.1,
+      "ranges_overlap": false,
+      "paired_per_sample_mean_difference": 0.004886492747270191,
+      "paired_per_sample_fraction_a_better": 0.0,
+      "paired_wilcoxon_p": 9.6404185138958e-44
+    },
+    {
+      "a": 8,
+      "b": 12,
+      "mean_difference_a_minus_b": -0.0005954278464438776,
+      "welch_t_p": 0.47547696861264344,
+      "seed_permutation_p": 0.5,
+      "ranges_overlap": true,
+      "paired_per_sample_mean_difference": -0.0005954278464438781,
+      "paired_per_sample_fraction_a_better": 0.70703125,
+      "paired_wilcoxon_p": 9.99082856083855e-16
+    },
+    {
+      "a": 8,
+      "b": 16,
+      "mean_difference_a_minus_b": -0.0005006906036821111,
+      "welch_t_p": 0.5390966138241902,
+      "seed_permutation_p": 0.7,
+      "ranges_overlap": true,
+      "paired_per_sample_mean_difference": -0.0005006906036821116,
+      "paired_per_sample_fraction_a_better": 0.6171875,
+      "paired_wilcoxon_p": 6.53178555914821e-08
+    },
+    {
+      "a": 12,
+      "b": 16,
+      "mean_difference_a_minus_b": 9.473724276176654e-05,
+      "welch_t_p": 0.5723722832317679,
+      "seed_permutation_p": 0.8,
+      "ranges_overlap": true,
+      "paired_per_sample_mean_difference": 9.473724276176646e-05,
+      "paired_per_sample_fraction_a_better": 0.41015625,
+      "paired_wilcoxon_p": 0.0037020480962334564
+    }
+  ],
+  "note": "Paired per-sample tests treat the test samples as the unit and ignore seed variation; they show where on the test set the seed-averaged models differ, not whether the difference would survive new training seeds. The seed-level tests are the relevant ones for that."
+}

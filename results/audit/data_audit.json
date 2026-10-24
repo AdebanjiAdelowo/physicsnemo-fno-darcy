@@ -1,0 +1,122 @@
+{
+  "regeneration": {
+    "file": "test_r64_n256_1c531c8f19.npz",
+    "permeability_bitwise_equal": true,
+    "pressure_bitwise_equal": true,
+    "pressure_max_abs_difference": 0.0
+  },
+  "leakage": {
+    "pairs": {
+      "test_to_train": {
+        "exact_duplicates": 0,
+        "min_nearest_hamming": 0.307861328125,
+        "median_nearest_hamming": 0.363037109375,
+        "pressure_rel_l2_of_closest_pair": 0.12915797531604767
+      },
+      "validation_to_train": {
+        "exact_duplicates": 0,
+        "min_nearest_hamming": 0.305908203125,
+        "median_nearest_hamming": 0.3646240234375,
+        "pressure_rel_l2_of_closest_pair": 0.046544671058654785
+      },
+      "test_to_validation": {
+        "exact_duplicates": 0,
+        "min_nearest_hamming": 0.320068359375,
+        "median_nearest_hamming": 0.3924560546875,
+        "pressure_rel_l2_of_closest_pair": 0.16881708800792694
+      }
+    },
+    "train_within": {
+      "exact_duplicates": 0,
+      "min_nearest_hamming": 0.31201171875
+    },
+    "normalisation": {
+      "train": {
+        "permeability_mean": 1.2470567226409912,
+        "permeability_std": 0.7499942183494568,
+        "pressure_mean": 0.047457486391067505,
+        "pressure_std": 0.027110589668154716
+      },
+      "validation": {
+        "permeability_mean": 1.2353858947753906,
+        "permeability_std": 0.7498575448989868,
+        "pressure_mean": 0.04801624268293381,
+        "pressure_std": 0.027380554005503654
+      },
+      "test": {
+        "permeability_mean": 1.2400879859924316,
+        "permeability_std": 0.7499344944953918,
+        "pressure_mean": 0.0475546196103096,
+        "pressure_std": 0.02704373374581337
+      },
+      "config_constants": {
+        "permeability_mean": 1.25,
+        "permeability_std": 0.75,
+        "pressure_mean": 0.0452,
+        "pressure_std": 0.0279
+      }
+    }
+  },
+  "shipped_family": {
+    "numpy_synthesis_matches_warp_fraction": 1.0,
+    "shipped_distinct_values_per_component": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "shipped_value_depends_only_on_leading_index": true,
+    "shipped_field_invariant_to_positive_scaling": true,
+    "shipped_effective_parameters": "a direction in R^4 (3 parameters): k = threshold(sum_c a_c S_c) with fixed S_c",
+    "Darcy2D_shipped": {
+      "training_fields": 8192,
+      "validation_fields": 256,
+      "median_nearest_hamming": 0.01953125,
+      "fraction_within_1_percent": 0.18359375,
+      "fraction_within_5_percent": 0.98828125
+    },
+    "IndependentDarcy2D": {
+      "training_fields": 8192,
+      "validation_fields": 256,
+      "median_nearest_hamming": 0.343017578125,
+      "fraction_within_1_percent": 0.0,
+      "fraction_within_5_percent": 0.0
+    },
+    "note": "Darcy2D_shipped: one distinct field per batch, so the upstream run of 256 pseudo-epochs sees 8192 distinct fields (each 64 times). IndependentDarcy2D drawn with the same count for comparison."
+  },
+  "generator_vs_independent_assembly_64": {
+    "rel_l2_vs_kernel": 0.00045445162784469754,
+    "rel_l2_vs_flux": 0.31490748564488147,
+    "rel_l2_vs_laplace": 0.0163307758175539
+  },
+  "smooth_k_refinement": [
+    {
+      "resolution": 32,
+      "kernel_vs_laplace": 0.014272036434357104,
+      "kernel_vs_flux": 0.1925056674475198,
+      "nonconservative_consistent_vs_flux": 0.0010909068118220334,
+      "laplace_vs_flux": 0.20842932822996124
+    },
+    {
+      "resolution": 64,
+      "kernel_vs_laplace": 0.007697956239697093,
+      "kernel_vs_flux": 0.21264574868899877,
+      "nonconservative_consistent_vs_flux": 0.00028150875252677936,
+      "laplace_vs_flux": 0.2214108255965477
+    },
+    {
+      "resolution": 128,
+      "kernel_vs_laplace": 0.003990627509251354,
+      "kernel_vs_flux": 0.22378896506015708,
+      "nonconservative_consistent_vs_flux": 7.513432012627776e-05,
+      "laplace_vs_flux": 0.22838291142442566
+    },
+    {
+      "resolution": 256,
+      "kernel_vs_laplace": 0.0020307473476598712,
+      "kernel_vs_flux": 0.22965343089545676,
+      "nonconservative_consistent_vs_flux": 1.9711090008913142e-05,
+      "laplace_vs_flux": 0.2320044886965366
+    }
+  ]
+}
