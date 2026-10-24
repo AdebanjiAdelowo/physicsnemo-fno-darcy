@@ -9,6 +9,8 @@ A parameter study built on the Fourier Neural Operator (FNO) Darcy-flow example 
 | Study | Configuration | Data generator | Device | Status |
 |---|---|---|---|---|
 | Reduced study, 64 × 64 | `configs/local.yaml` | `IndependentDarcy2D` | Apple MPS | **run**; all numbers in [Results](#results) come from it |
+| Reduced study, seeds 3 to 5 | `configs/local.yaml` | `IndependentDarcy2D` | Apple MPS | **run** ([audit](docs/SCIENTIFIC_AUDIT.md)) |
+| Reduced study, three times the training budget | `configs/local.yaml` with overrides | `IndependentDarcy2D` | Apple MPS | **run** ([audit](docs/SCIENTIFIC_AUDIT.md)) |
 | Generator checks | `scripts/verify_generator.py` | both | CPU | **run** |
 | Generator checks | `scripts/verify_generator.py --device cuda` | both | CUDA | pending |
 | Main study, 256 × 256 | `configs/full.yaml` | `IndependentDarcy2D` | CUDA | pending |
@@ -103,7 +105,7 @@ No external dataset is used. `Darcy2D` draws Fourier coefficients on $[-1, 1]$, 
 | `Darcy2D` as shipped | 1 | 4 of 1600 |
 | `IndependentDarcy2D` (this repository) | 16 | 1600 of 1600 |
 
-As shipped, all samples of a batch are the same field, and all frequencies of a sample share one amplitude per trigonometric component. The same four-of-many pattern was reproduced with a standalone kernel on Warp 1.5.1, 1.10.1, 1.14.0, 1.16.0, 1.17.0 and 1.18.0 on CPU. **It has not been tested on CUDA.** Whether the Warp CUDA backend behaves the same way is the first step of the GPU workflow below (`scripts/verify_generator.py --device cuda`), and the statements in this section hold for CPU until that check is recorded. `IndependentDarcy2D` draws the coefficients from NumPy with the same range and leaves the synthesis, the thresholding and the solver to the upstream kernels. All studies in this repository use it; `configs/official.yaml` keeps the upstream behaviour.
+As shipped, all samples of a batch are the same field, and all frequencies of a sample share one amplitude per trigonometric component. Because the field is thresholded at zero, it depends only on the direction of these four amplitudes: the shipped generator samples a three-parameter family of fields ([`docs/GENERATOR_VALIDATION.md`](docs/GENERATOR_VALIDATION.md)). The same four-of-many pattern was reproduced with a standalone kernel on Warp 1.5.1, 1.10.1, 1.14.0, 1.16.0, 1.17.0 and 1.18.0 on CPU. **It has not been tested on CUDA.** Whether the Warp CUDA backend behaves the same way is the first step of the GPU workflow below (`scripts/verify_generator.py --device cuda`), and the statements in this section hold for CPU until that check is recorded. `IndependentDarcy2D` draws the coefficients from NumPy with the same range and leaves the synthesis, the thresholding and the solver to the upstream kernels. All studies in this repository use it; `configs/official.yaml` keeps the upstream behaviour.
 
 **2. Solver tolerance.** The Jacobi iteration stops when the largest update falls below `convergence_threshold`. The table gives the relative $L^2$ difference between the generated pressure and a sparse direct solve of the same stencil (mean of 4 samples):
 
@@ -265,6 +267,19 @@ python scripts/verify_generator.py
 
 Losses are mean squared errors of the normalised pressure. Inference times are for a batch of 32 on MPS, divided by 32. The error of the reference solver at this resolution and tolerance is 0.045% (see [Dataset](#dataset)).
 
+### Three further seeds
+
+The same configuration and data with seeds 3, 4 and 5 ([`results/audit_seeds345/`](results/audit_seeds345/), commit `5c81978`). Test relative $L^2$ error, mean ± sample standard deviation:
+
+| Fourier modes | Seeds 0 to 2 (table above) | Seeds 3 to 5 | All six seeds | 95% interval of the mean, six seeds |
+|---|---|---|---|---|
+| 4 | 1.46% | 1.39% | 1.42% ± 0.12% | 1.30% to 1.55% |
+| 8 | 0.92% | 0.92% | 0.92% ± 0.12% | 0.80% to 1.04% |
+| 12 | 0.98% | 0.90% | 0.94% ± 0.08% | 0.85% to 1.02% |
+| 16 | 0.97% | 0.85% | 0.91% ± 0.09% | 0.81% to 1.00% |
+
+In the new seeds the order of 8, 12 and 16 modes is reversed. Over six seeds the three settings cannot be distinguished (all pairwise $p > 0.5$, Welch and permutation tests), while 4 modes is worse than each of them in every seed (permutation $p = 0.002$). The timings of these runs are not reported because other work ran on the machine at the same time. Analysis: [`docs/SCIENTIFIC_AUDIT.md`](docs/SCIENTIFIC_AUDIT.md).
+
 ### Main study and upstream control (pending)
 
 | Study | Test relative $L^2$ error | Timings and memory |
@@ -299,14 +314,14 @@ All figures are from the reduced study.
 
 These statements are for the reduced study only: one 64 × 64 grid, 1024 training samples and 960 optimiser steps.
 
-- **Accuracy saturates at 8 modes.** Going from 4 to 8 modes lowers the test error from 1.46% to 0.92%, and the ranges over seeds do not overlap. Between 8, 12 and 16 modes the means differ by less than the spread over seeds at 8 modes.
+- **Accuracy stops improving beyond 8 modes.** Going from 4 to 8 modes lowers the test error from 1.42% to 0.92% (six seeds), and the ranges over seeds do not overlap. Between 8, 12 and 16 modes no difference is detectable with six seeds; which of them has the lowest mean depends on the seeds. The data do not identify an optimal number of modes, only that 4 is too few at this budget.
 - **More modes add parameters without adding accuracy here.** From 8 to 16 modes the parameter count grows by a factor of 4.0, from 1.05 to 4.20 million, with no measurable change of the error. The spectral weights account for nearly all parameters: each of the four layers holds $2 \times 32^2 \times m^2$ complex coefficients for $m$ modes.
 - **Time does not depend on the number of modes at this size.** Optimisation time lies between 303 s and 309 s for all settings, within the spread over seeds. The cost of a step is set by the FFTs and pointwise layers on the padded 73 × 73 grid, and not by the size of the retained block. Inference time rises from 4.33 ms to 4.71 ms per sample, an increase smaller than the standard deviation of the 16-mode measurement. In this regime the cost of additional modes is memory for the weights, not time.
-- **Seed sensitivity is larger for the small models.** The standard deviation over seeds is 0.12 to 0.15 percentage points for 4 and 8 modes and 0.01 to 0.02 for 12 and 16.
+- **Seed sensitivity is similar for all settings.** With three seeds the standard deviation appeared much smaller for 12 and 16 modes (0.01 to 0.02 percentage points) than for 4 and 8 (0.12 to 0.15). With six seeds it is 0.08 to 0.12 percentage points for every setting; the earlier difference was a three-seed artefact.
 - **The generalisation gap is small.** The test MSE exceeds the final training loss by 3% to 16%, so the plateau is not explained by overfitting to the 1024 training samples.
 - **Where the error is.** In the plotted sample the 4-mode model has its largest errors along the domain boundary and along the permeability interfaces; with 8 or more modes the error is lower everywhere and keeps a trace of the interfaces.
 
-The validation error is still decreasing at the last pseudo-epoch for every setting, so the comparison is at a fixed training budget and not at convergence. Whether the larger models overtake the 8-mode model with more data or longer training is not answered by this study, and it is the question the 256 × 256 configuration is set up for.
+The validation error is still decreasing at the last pseudo-epoch for every setting, so the comparison is at a fixed training budget and not at convergence. A run with three times the optimiser steps (90 pseudo-epochs, learning rate decayed every 9, the same final learning rate; seed 0; [`results/audit_long90/`](results/audit_long90/)) lowers the test error from 1.03%, 0.97% and 0.96% to 0.35%, 0.33% and 0.34% for 8, 12 and 16 modes. The absolute errors in the table above are therefore set by the training budget. The three settings still coincide at the longer budget, but with one seed each and without a 4-mode run, the behaviour at convergence remains open.
 
 ## Limitations
 
@@ -314,7 +329,7 @@ The validation error is still decreasing at the last pseudo-epoch for every sett
 - Results exist only for the reduced study at 64 × 64. The upstream resolution and the upstream training protocol have not been run.
 - The study and the upstream control use different samplers (`IndependentDarcy2D` and `Darcy2D`), data budgets and solver tolerances. Once both exist, their errors are not directly comparable: the control measures the upstream example as it is, on the data it generates.
 - Fixed training budget, not converged; one learning-rate schedule; no tuning per setting.
-- Three seeds per setting.
+- Six seeds per setting (three in the original study). The final checkpoint is taken while the validation error still varies by about 0.04 percentage points between pseudo-epochs, which is as large as the differences between 8, 12 and 16 modes.
 - Only the number of modes is varied. Latent width, depth and padding interact with it and are held at the upstream values.
 - Timings are for one laptop with MPS and one batch size. They do not transfer to a CUDA device, where the ranking of costs can differ. MPS has no peak-memory counter, so no memory measurement is reported.
 - The inference time of the FNO is not compared with the time of the reference solver: in the reduced study the solver ran on CPU and the model on MPS.
