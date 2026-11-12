@@ -16,6 +16,7 @@ Writes ``results/generator_check.json`` and ``figures/generator_check.png`` for 
 """
 
 import argparse
+import time
 from pathlib import Path
 
 import numpy as np
@@ -43,13 +44,48 @@ def diversity(cls, device: str, batch_size: int = 16, n_batches: int = 2) -> dic
         per_batch.append(len({f.tobytes() for f in k}))
         fields |= {f.tobytes() for f in k}
         coefficients.append(len(np.unique(pipe.rand_fourier.numpy())))
-    return {
+    result = {
         "batch_size": batch_size,
         "batches": n_batches,
         "distinct_fields_per_batch": per_batch,
         "distinct_fields_total": len(fields),
         "coefficients_per_batch": int(np.prod(pipe.fourier_dim)),
         "distinct_coefficient_values_per_batch": coefficients,
+    }
+
+
+    if device == "cuda":
+        result["output_checks"] = output_checks(cls, device, batch_size)
+    return result
+
+
+def output_checks(cls, device: str, batch_size: int) -> dict:
+    """Check two fresh generators with the same NumPy seed on the same device."""
+    resolution = 32
+
+    def draw(seed):
+        np.random.seed(seed)
+        pipe = cls(resolution=resolution, batch_size=batch_size, device=device)
+        return {key: value.cpu().numpy().copy() for key, value in next(iter(pipe)).items()}
+
+    first, repeated, other = draw(SEED), draw(SEED), draw(SEED + 1)
+    fields = {
+        key: {
+            "shape": list(value.shape),
+            "dtype": str(value.dtype),
+            "nan_count": int(np.isnan(value).sum()),
+            "infinity_count": int(np.isinf(value).sum()),
+            "exact_seed_replay": bool(np.array_equal(value, repeated[key])),
+        }
+        for key, value in first.items()
+    }
+    return {
+        "resolution": resolution,
+        "seed": SEED,
+        "other_seed": SEED + 1,
+        "different_seed_changes_permeability": not np.array_equal(first["permeability"], other["permeability"]),
+        "permeability_values": np.unique(first["permeability"][np.isfinite(first["permeability"])]).tolist(),
+        "fields": fields,
     }
 
 
@@ -67,6 +103,19 @@ def solver_check(resolution: int, n_samples: int, thresholds: tuple, device: str
             entry[f"rel_l2_vs_{form}_solve"] = float(np.mean([rel_l2(u[b], direct[form][b]) for b in range(n_samples)]))
         for form in ("kernel", "flux"):
             entry[f"{form}_residual_rms"] = float(np.sqrt(np.mean(darcy_residual(u, k, pipe.dx, form=form) ** 2)))
+        if device == "cuda":
+            # Upstream checks the maximum update between the final two iterates.
+            update = float(pipe.inf_residual.numpy()[0])
+            # Boundary values outside the solver grid are zero. Compare the
+            # adjacent pressure nodes against the same Dirichlet stencil.
+            edge = np.ones(u.shape[1:], dtype=bool)
+            edge[1:-1, 1:-1] = False
+            entry.update(
+                final_max_jacobi_update=update,
+                met_stopping_tolerance=update < threshold,
+                boundary_adjacent_rel_l2_vs_kernel_solve=rel_l2(u[:, edge], direct["kernel"][:, edge]),
+                full_grid_finite=bool(np.isfinite(u).all() and np.isfinite(k).all()),
+            )
         out["by_threshold"].append(entry)
     example = {"k": k[0], "generated": u[0], "flux": direct["flux"][0], "resolution": resolution, "threshold": thresholds[-1]}
     return out, example
@@ -108,6 +157,7 @@ def main() -> None:
         raise SystemExit("--device cuda was requested but CUDA is not available on this machine.")
     suffix = "" if args.device == "cpu" else f"_{args.device}"
 
+    started = time.perf_counter()
     report = {
         "environment": collect_metadata(torch.device(args.device)),
         "generator_device": args.device,
@@ -132,8 +182,10 @@ def main() -> None:
                   f"own stencil {e['rel_l2_vs_kernel_solve']:.2e}, conservative Darcy {e['rel_l2_vs_flux_solve']:.2e}, "
                   f"k*laplace(u)=-1 {e['rel_l2_vs_laplace_solve']:.2e}")
     (args.out_root / "figures").mkdir(parents=True, exist_ok=True)
-    write_json(args.out_root / "results" / f"generator_check{suffix}.json", report)
     plot_example(example, args.out_root / "figures" / f"generator_check{suffix}.png")
+    if args.device == "cuda":
+        report["verification_seconds"] = time.perf_counter() - started
+    write_json(args.out_root / "results" / f"generator_check{suffix}.json", report)
     print(f"written under {args.out_root}: results/generator_check{suffix}.json, figures/generator_check{suffix}.png")
 
 
