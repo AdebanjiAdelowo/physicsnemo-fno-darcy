@@ -33,7 +33,10 @@ def test_boundary_error_and_independent_reference_forms():
     edge[1:-1, 1:-1] = False
     result = compare_sample(k, u, dx, edge)
     assert result["stencil_rel_l2"] == result["boundary_stencil_rel_l2"] == 0.0
-    assert result["conservative_rel_l2"] > 0.1
+    flux = direct_solve(k, dx, "flux")
+    expected_flux_error = np.linalg.norm(u - flux) / np.linalg.norm(flux)
+    assert expected_flux_error > 0
+    assert result["conservative_rel_l2"] == pytest.approx(expected_flux_error)
     perturbed = u.copy()
     perturbed[edge] *= 1.1
     assert compare_sample(k, perturbed, dx, edge)["boundary_stencil_rel_l2"] == pytest.approx(0.1)
