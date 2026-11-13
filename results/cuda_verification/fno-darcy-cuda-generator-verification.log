@@ -1,0 +1,77 @@
+[{"stream_name":"stderr","time":8.48441979,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.484495231,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.484503217,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.484507583,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":9.145729651,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":9.14576452,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":9.145775783,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":9.145779004,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":17.851605361,"data":"Thu Nov 12 20:36:57 2026       \n"}
+,{"stream_name":"stdout","time":17.851648754,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":17.851654494,"data":"| NVIDIA-SMI 580.178.04             Driver Version: 580.178.04     CUDA Version: 13.0     |\n"}
+,{"stream_name":"stdout","time":17.851658678,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":17.851662152,"data":"| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n"}
+,{"stream_name":"stdout","time":17.851666108,"data":"| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n"}
+,{"stream_name":"stdout","time":17.851670959,"data":"|                                         |                        |               MIG M. |\n"}
+,{"stream_name":"stdout","time":17.851675606,"data":"|=========================================+========================+======================|\n"}
+,{"stream_name":"stdout","time":17.851679626,"data":"|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":17.851683174,"data":"| N/A   49C    P8             11W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":17.851686894,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":17.851690805,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":17.851695289,"data":"|   1  Tesla T4                       Off |   00000000:00:05.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":17.85169891,"data":"| N/A   52C    P8             10W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":17.851702699,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":17.851706306,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":17.851709855,"data":"\n"}
+,{"stream_name":"stdout","time":17.851713076,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":17.851716606,"data":"| Processes:                                                                              |\n"}
+,{"stream_name":"stdout","time":17.851733932,"data":"|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n"}
+,{"stream_name":"stdout","time":17.851738008,"data":"|        ID   ID                                                               Usage      |\n"}
+,{"stream_name":"stdout","time":17.851741869,"data":"|=========================================================================================|\n"}
+,{"stream_name":"stdout","time":17.851746277,"data":"|  No running processes found                                                             |\n"}
+,{"stream_name":"stdout","time":17.851752589,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":17.851756212,"data":"\n"}
+,{"stream_name":"stdout","time":17.85175985,"data":"GPU: Tesla T4 | torch 2.11.0+cu130\n"}
+,{"stream_name":"stdout","time":18.908162183,"data":"commit 1f8a69e8a7c0772bf95bab4ed9022f1a7c8510d1\n"}
+,{"stream_name":"stderr","time":19.44311572,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stderr","time":19.443148136,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stderr","time":19.646002794,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stderr","time":19.646062151,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stderr","time":19.646070339,"data":"\n"}
+,{"stream_name":"stderr","time":19.646074283,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stderr","time":19.646077937,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":21.912344596,"data":"$ python -m pip install -q -r requirements.txt torch==2.14.1 torchvision==0.29.1 warp-lang==1.18.0 numpy==2.5.3 scipy==1.18.1\n"}
+,{"stream_name":"stderr","time":21.965115421,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stderr","time":21.965150238,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stderr","time":22.167932639,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stderr","time":22.167967923,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stderr","time":22.167972949,"data":"\n"}
+,{"stream_name":"stderr","time":22.167976968,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stderr","time":22.167980759,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":314.830865061,"data":"$ python -c \"import torch, physicsnemo, warp; assert torch.cuda.is_available(); print('torch', torch.__version__, '| CUDA', torch.version.cuda, '| physicsnemo', physicsnemo.__version__, '| warp', warp.__version__, '|', torch.cuda.get_device_name(0))\"\n"}
+,{"stream_name":"stdout","time":317.300091588,"data":"torch 2.14.1+cu130 | CUDA 13.0 | physicsnemo 2.3.0a0 | warp 1.18.0 | Tesla T4\n"}
+,{"stream_name":"stdout","time":317.502628781,"data":"torch 2.14.1+cu130 | CUDA 13.0 | physicsnemo 2.3.0a0 | warp 1.18.0 | Tesla T4\n"}
+,{"stream_name":"stdout","time":333.167833134,"data":"generator device: cuda (Tesla T4)\n"}
+,{"stream_name":"stdout","time":333.168990095,"data":"Darcy2D: distinct fields per batch of 16: [1, 1], distinct coefficient values per batch: [4, 4] of 1600\n"}
+,{"stream_name":"stdout","time":333.169877742,"data":"IndependentDarcy2D: distinct fields per batch of 16: [16, 16], distinct coefficient values per batch: [1600, 1600] of 1600\n"}
+,{"stream_name":"stdout","time":334.101777774,"data":"resolution 64, tolerance 1e-06: relative L2 against direct solves: own stencil 4.16e-03, conservative Darcy 3.10e-01, k*laplace(u)=-1 1.99e-02\n"}
+,{"stream_name":"stdout","time":334.102621464,"data":"resolution 64, tolerance 1e-07: relative L2 against direct solves: own stencil 4.54e-04, conservative Darcy 3.15e-01, k*laplace(u)=-1 1.63e-02\n"}
+,{"stream_name":"stdout","time":337.082542329,"data":"resolution 128, tolerance 1e-06: relative L2 against direct solves: own stencil 2.70e-03, conservative Darcy 3.34e-01, k*laplace(u)=-1 7.45e-03\n"}
+,{"stream_name":"stdout","time":337.088385672,"data":"resolution 128, tolerance 1e-07: relative L2 against direct solves: own stencil 1.63e-03, conservative Darcy 3.30e-01, k*laplace(u)=-1 1.02e-02\n"}
+,{"stream_name":"stdout","time":350.068408782,"data":"resolution 256, tolerance 1e-06: relative L2 against direct solves: own stencil 1.33e-02, conservative Darcy 3.53e-01, k*laplace(u)=-1 1.05e-02\n"}
+,{"stream_name":"stdout","time":350.07112303,"data":"resolution 256, tolerance 1e-07: relative L2 against direct solves: own stencil 1.68e-03, conservative Darcy 3.40e-01, k*laplace(u)=-1 5.03e-03\n"}
+,{"stream_name":"stdout","time":350.929387192,"data":"written under /kaggle/working/generator-check-cuda: results/generator_check_cuda.json, figures/generator_check_cuda.png\n"}
+,{"stream_name":"stdout","time":353.311244,"data":"{'gpu_name': 'Tesla T4', 'cuda_version': '13.0', 'torch_version': '2.14.1+cu130', 'warp_version': '1.18.0', 'physicsnemo': {'version': '2.3.0a0', 'commit': 'b45a5c810c741e6b41f8515be24c51121f8fc21f', 'url': 'https://github.com/NVIDIA/physicsnemo.git'}}\n"}
+,{"stream_name":"stdout","time":353.311298661,"data":"Darcy2D as shipped on CUDA: distinct fields per batch of 16: [1, 1], distinct coefficient values: [4, 4] of 1600\n"}
+,{"stream_name":"stdout","time":353.31130536,"data":"REPEATED-BATCH DEFECT ON CUDA: REPRODUCED\n"}
+,{"stream_name":"stdout","time":353.311309228,"data":"written: /kaggle/working/physicsnemo-fno-darcy-generator-check-cuda.zip\n"}
+,{"stream_name":"stdout","time":353.311312912,"data":"Elapsed including notebook setup: 342.9 s\n"}
+,{"stream_name":"stderr","time":359.43808171,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":359.438139434,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":359.638958278,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":359.638989145,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":360.582722365,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":360.724247189,"data":"[NbConvertApp] Writing 17726 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":364.934788483,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":365.525669444,"data":"[NbConvertApp] Writing 307074 bytes to __results__.html\n"}
+]

@@ -1,6 +1,6 @@
 # Generator validation
 
-What the PhysicsNeMo `Darcy2D` generator (commit `b45a5c810c741e6b41f8515be24c51121f8fc21f`, Warp 1.18.0) produces, and what the `IndependentDarcy2D` modification of this repository changes. Every number below comes from a script in this repository and a tracked JSON file. All executions are on CPU (macOS arm64). Nothing was executed on CUDA.
+What the PhysicsNeMo `Darcy2D` generator (commit `b45a5c810c741e6b41f8515be24c51121f8fc21f`, Warp 1.18.0) produces, and what the `IndependentDarcy2D` modification of this repository changes. Every number below comes from a script in this repository and a tracked JSON file. The original audit used CPU (macOS arm64). The [CUDA verification](CUDA_GENERATOR_VALIDATION.md) documents the subsequent Tesla T4 measurements.
 
 Classifications: **VERIFIED** (reproduced by execution or by an independent second implementation), **SUPPORTED BUT LIMITED** (evidence is sound but incomplete in scope), **UNVERIFIED** (not tested), **INCORRECT** (contradicted by evidence).
 
@@ -109,7 +109,7 @@ A shipped field is $k = \text{threshold}_0\bigl(\sum_{c=0}^{3} a_c S_c\bigr)$ wi
 
 The upstream validation error therefore measures interpolation within a densely sampled three-parameter family. Errors obtained that way are not comparable with errors on independent fields. **VERIFIED** (CPU, simulation of the protocol, not a training run).
 
-**On CUDA.** The CPU and CUDA code paths of Warp 1.18.0 call the same templated `wp::tid` function, which is compiled for both targets, so the same behaviour is expected on CUDA. This is static evidence only: **UNVERIFIED by execution**. `python scripts/verify_generator.py --device cuda` (Kaggle step A) is the test. Older Warp versions may differ; the README reports the same pattern in a standalone kernel on Warp 1.5.1 to 1.18.0 on CPU, which this audit did not repeat.
+**On CUDA.** The Tesla T4 run reproduced one distinct permeability field and four distinct coefficient values in each batch of 16 with Warp 1.18.0. [CUDA verification and raw evidence](CUDA_GENERATOR_VALIDATION.md).
 
 ## 5. `IndependentDarcy2D`
 

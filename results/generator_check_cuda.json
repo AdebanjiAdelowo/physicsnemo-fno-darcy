@@ -1,0 +1,218 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-11-12T20:42:09+00:00",
+    "git_commit": "1f8a69e8a7c0772bf95bab4ed9022f1a7c8510d1",
+    "git_dirty": false,
+    "device": "cuda",
+    "gpu_name": "Tesla T4",
+    "cuda_version": "13.0",
+    "python_version": "3.13.16",
+    "torch_version": "2.14.1+cu130",
+    "physicsnemo": {
+      "version": "2.3.0a0",
+      "commit": "b45a5c810c741e6b41f8515be24c51121f8fc21f",
+      "url": "https://github.com/NVIDIA/physicsnemo.git"
+    },
+    "warp_version": "1.18.0",
+    "numpy_version": "2.5.3",
+    "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+    "processor": "x86_64"
+  },
+  "generator_device": "cuda",
+  "seed": 0,
+  "diversity": {
+    "Darcy2D": {
+      "batch_size": 16,
+      "batches": 2,
+      "distinct_fields_per_batch": [
+        1,
+        1
+      ],
+      "distinct_fields_total": 2,
+      "coefficients_per_batch": 1600,
+      "distinct_coefficient_values_per_batch": [
+        4,
+        4
+      ],
+      "output_checks": {
+        "resolution": 32,
+        "seed": 0,
+        "other_seed": 1,
+        "different_seed_changes_permeability": true,
+        "permeability_values": [
+          0.5,
+          2.0
+        ],
+        "fields": {
+          "permeability": {
+            "shape": [
+              16,
+              1,
+              32,
+              32
+            ],
+            "dtype": "float32",
+            "nan_count": 0,
+            "infinity_count": 0,
+            "exact_seed_replay": true
+          },
+          "darcy": {
+            "shape": [
+              16,
+              1,
+              32,
+              32
+            ],
+            "dtype": "float32",
+            "nan_count": 0,
+            "infinity_count": 0,
+            "exact_seed_replay": true
+          }
+        }
+      }
+    },
+    "IndependentDarcy2D": {
+      "batch_size": 16,
+      "batches": 2,
+      "distinct_fields_per_batch": [
+        16,
+        16
+      ],
+      "distinct_fields_total": 32,
+      "coefficients_per_batch": 1600,
+      "distinct_coefficient_values_per_batch": [
+        1600,
+        1600
+      ],
+      "output_checks": {
+        "resolution": 32,
+        "seed": 0,
+        "other_seed": 1,
+        "different_seed_changes_permeability": true,
+        "permeability_values": [
+          0.5,
+          2.0
+        ],
+        "fields": {
+          "permeability": {
+            "shape": [
+              16,
+              1,
+              32,
+              32
+            ],
+            "dtype": "float32",
+            "nan_count": 0,
+            "infinity_count": 0,
+            "exact_seed_replay": true
+          },
+          "darcy": {
+            "shape": [
+              16,
+              1,
+              32,
+              32
+            ],
+            "dtype": "float32",
+            "nan_count": 0,
+            "infinity_count": 0,
+            "exact_seed_replay": true
+          }
+        }
+      }
+    }
+  },
+  "solver": [
+    {
+      "resolution": 64,
+      "n_samples": 4,
+      "by_threshold": [
+        {
+          "convergence_threshold": 1e-06,
+          "rel_l2_vs_kernel_solve": 0.004162818000816219,
+          "rel_l2_vs_flux_solve": 0.31047900264571726,
+          "rel_l2_vs_laplace_solve": 0.019860538890805825,
+          "kernel_residual_rms": 0.006532001767595742,
+          "flux_residual_rms": 5.043866981362947,
+          "final_max_jacobi_update": 8.642673492431641e-07,
+          "met_stopping_tolerance": true,
+          "boundary_adjacent_rel_l2_vs_kernel_solve": 0.003062799085879938,
+          "full_grid_finite": true
+        },
+        {
+          "convergence_threshold": 1e-07,
+          "rel_l2_vs_kernel_solve": 0.0004544516278344021,
+          "rel_l2_vs_flux_solve": 0.3149074856448907,
+          "rel_l2_vs_laplace_solve": 0.0163307758175397,
+          "kernel_residual_rms": 0.0007226328646297775,
+          "flux_residual_rms": 5.060741671629785,
+          "final_max_jacobi_update": 9.685754776000977e-08,
+          "met_stopping_tolerance": true,
+          "boundary_adjacent_rel_l2_vs_kernel_solve": 0.0003318624186584218,
+          "full_grid_finite": true
+        }
+      ]
+    },
+    {
+      "resolution": 128,
+      "n_samples": 4,
+      "by_threshold": [
+        {
+          "convergence_threshold": 1e-06,
+          "rel_l2_vs_kernel_solve": 0.00270033285656552,
+          "rel_l2_vs_flux_solve": 0.3335393484636562,
+          "rel_l2_vs_laplace_solve": 0.007452142308905747,
+          "kernel_residual_rms": 0.007052314485626525,
+          "flux_residual_rms": 7.415448510583243,
+          "final_max_jacobi_update": 2.4586915969848633e-07,
+          "met_stopping_tolerance": true,
+          "boundary_adjacent_rel_l2_vs_kernel_solve": 0.0019394217705815489,
+          "full_grid_finite": true
+        },
+        {
+          "convergence_threshold": 1e-07,
+          "rel_l2_vs_kernel_solve": 0.0016285533642600256,
+          "rel_l2_vs_flux_solve": 0.3299067451783288,
+          "rel_l2_vs_laplace_solve": 0.010159987556875423,
+          "kernel_residual_rms": 0.002492077369984327,
+          "flux_residual_rms": 7.394683603702128,
+          "final_max_jacobi_update": 9.685754776000977e-08,
+          "met_stopping_tolerance": true,
+          "boundary_adjacent_rel_l2_vs_kernel_solve": 0.0012012718920395003,
+          "full_grid_finite": true
+        }
+      ]
+    },
+    {
+      "resolution": 256,
+      "n_samples": 4,
+      "by_threshold": [
+        {
+          "convergence_threshold": 1e-06,
+          "rel_l2_vs_kernel_solve": 0.013291736652244604,
+          "rel_l2_vs_flux_solve": 0.3533833121328448,
+          "rel_l2_vs_laplace_solve": 0.010540745464539914,
+          "kernel_residual_rms": 0.033645051603437934,
+          "flux_residual_rms": 10.790410830892084,
+          "final_max_jacobi_update": 2.421438694000244e-07,
+          "met_stopping_tolerance": true,
+          "boundary_adjacent_rel_l2_vs_kernel_solve": 0.012433041700199718,
+          "full_grid_finite": true
+        },
+        {
+          "convergence_threshold": 1e-07,
+          "rel_l2_vs_kernel_solve": 0.001679307928347755,
+          "rel_l2_vs_flux_solve": 0.3403021091541002,
+          "rel_l2_vs_laplace_solve": 0.0050252397113652435,
+          "kernel_residual_rms": 0.007467554158783183,
+          "flux_residual_rms": 10.673517222009417,
+          "final_max_jacobi_update": 6.705522537231445e-08,
+          "met_stopping_tolerance": true,
+          "boundary_adjacent_rel_l2_vs_kernel_solve": 0.0018249025397401423,
+          "full_grid_finite": true
+        }
+      ]
+    }
+  ],
+  "verification_seconds": 22.071963594999943
+}

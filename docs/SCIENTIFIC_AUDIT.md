@@ -13,6 +13,8 @@ Classifications:
 | **UNVERIFIED** | Not tested; no evidence for or against |
 | **INCORRECT** | Contradicted by the evidence |
 
+The [subsequent CUDA verification](CUDA_GENERATOR_VALIDATION.md) updates the CUDA-specific conclusions of this CPU audit.
+
 ## 1. Summary
 
 1. **The saved numbers are correct.** The four mean test errors (1.458%, 0.920%, 0.979%, 0.970%) follow from the per-run records. They were recomputed from the checkpoints in NumPy on CPU, independently of the repository's metric code, with a largest relative difference of $2.8\times10^{-5}$ over the 12 runs. The parameter counts match the analytic count. **VERIFIED.**
