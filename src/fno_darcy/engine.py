@@ -112,7 +112,7 @@ def error_metrics(pred: torch.Tensor, target: torch.Tensor, normaliser: dict) ->
     return {"mse_normalised": torch.mean((pred - target) ** 2).item(), "rel_l2": rel}
 
 
-def train_run(cfg: DictConfig, fno_modes: int, seed: int, run_dir: Path, device: torch.device, sets: dict) -> dict:
+def train_run(cfg: DictConfig, fno_modes: int, seed: int, run_dir: Path, device: torch.device, sets: dict, *, probe=None) -> dict:
     """Train one FNO and write ``history.csv``, ``train_metrics.json`` and a checkpoint."""
     run_dir = Path(run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -126,6 +126,8 @@ def train_run(cfg: DictConfig, fno_modes: int, seed: int, run_dir: Path, device:
     model = build_fno(cfg, fno_modes).to(device)
     loss_fun = MSELoss(reduction="mean")
     optimizer = Adam(model.parameters(), lr=cfg.scheduler.initial_lr)
+    if probe is not None:
+        probe.attach(model, optimizer)
     scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda step: cfg.scheduler.decay_rate**step)
 
     batch_size = cfg.training.batch_size
@@ -139,8 +141,12 @@ def train_run(cfg: DictConfig, fno_modes: int, seed: int, run_dir: Path, device:
 
     @StaticCaptureTraining(model=model, optim=optimizer, logger=log, use_amp=False, use_graphs=False)
     def forward_train(invars, target):
+        if probe is not None:
+            probe.mark("forward")
         pred = model(invars)
         loss = loss_fun(pred, target)
+        if probe is not None:
+            loss.register_hook(probe.backward_start)
         return loss
 
     @StaticCaptureEvaluateNoGrad(model=model, logger=log, use_amp=False, use_graphs=False)
@@ -165,7 +171,12 @@ def train_run(cfg: DictConfig, fno_modes: int, seed: int, run_dir: Path, device:
             synchronise(device)
             tock = time.perf_counter()
             data_seconds += tock - tick
-            losses.append(forward_train(invars, target).detach())
+            if probe is not None:
+                probe.begin(tock - tick)
+            loss = forward_train(invars, target).detach()
+            if probe is not None:
+                probe.finish(loss)
+            losses.append(loss)
             synchronise(device)
             tick = time.perf_counter()
             optim_seconds += tick - tock
@@ -181,7 +192,12 @@ def train_run(cfg: DictConfig, fno_modes: int, seed: int, run_dir: Path, device:
             save_checkpoint(run_dir / "checkpoints", models=model, optimizer=optimizer, scheduler=scheduler, epoch=pseudo_epoch)
 
         if pseudo_epoch % cfg.validation.validation_pseudo_epochs == 0:
-            val = error_metrics(predict(forward_eval, val_k, batch_size, device), val_u, normaliser)
+            if probe is not None:
+                probe.mark("validation")
+            predictions = predict(forward_eval, val_k, batch_size, device)
+            val = error_metrics(predictions, val_u, normaliser)
+            if probe is not None:
+                probe.validation(val, predictions, val_u)
             row["validation_loss"] = val["mse_normalised"]
             row["validation_rel_l2"] = val["rel_l2"].mean().item()
 
@@ -196,9 +212,14 @@ def train_run(cfg: DictConfig, fno_modes: int, seed: int, run_dir: Path, device:
 
     synchronise(device)
     train_seconds = time.perf_counter() - start
+    if probe is not None:
+        probe.mark("checkpoint")
     save_checkpoint(
         run_dir / "checkpoints", models=model, optimizer=optimizer, scheduler=scheduler, epoch=cfg.training.max_pseudo_epochs
     )
+
+    if probe is not None:
+        probe.checkpoint()
 
     with open(run_dir / "history.csv", "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=HISTORY_FIELDS)

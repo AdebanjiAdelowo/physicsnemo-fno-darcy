@@ -1,0 +1,21 @@
+{
+  "timestamp_utc": "2026-11-13T14:44:24+00:00",
+  "git_commit": "e2faadffb561009c3a897f88f9ce835ceb74ac31",
+  "git_dirty": false,
+  "device": "cuda",
+  "gpu_name": "Tesla T4",
+  "cuda_version": "13.0",
+  "python_version": "3.13.16",
+  "torch_version": "2.14.1+cu130",
+  "physicsnemo": {
+    "version": "2.3.0a0",
+    "commit": "b45a5c810c741e6b41f8515be24c51121f8fc21f",
+    "url": "https://github.com/NVIDIA/physicsnemo.git"
+  },
+  "warp_version": "1.18.0",
+  "numpy_version": "2.5.3",
+  "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+  "processor": "x86_64",
+  "scipy_version": "1.18.1",
+  "total_vram_mib": 14911.6875
+}

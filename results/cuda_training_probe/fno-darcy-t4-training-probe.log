@@ -1,0 +1,70 @@
+[{"stream_name":"stderr","time":7.960293209,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.9603350200000005,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.960339383,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.960342127,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.550878826,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.550921001,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.550926976,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.550931218,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":15.706548795,"data":"Fri Nov 13 14:39:23 2026       \n"}
+,{"stream_name":"stdout","time":15.706610429,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":15.706617094,"data":"| NVIDIA-SMI 580.178.04             Driver Version: 580.178.04     CUDA Version: 13.0     |\n"}
+,{"stream_name":"stdout","time":15.706621427,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":15.706625267,"data":"| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n"}
+,{"stream_name":"stdout","time":15.706629082,"data":"| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n"}
+,{"stream_name":"stdout","time":15.706633001,"data":"|                                         |                        |               MIG M. |\n"}
+,{"stream_name":"stdout","time":15.706637074,"data":"|=========================================+========================+======================|\n"}
+,{"stream_name":"stdout","time":15.706640427,"data":"|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":15.706644041,"data":"| N/A   57C    P8             10W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":15.706647957,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":15.706651487,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":15.70665504,"data":"|   1  Tesla T4                       Off |   00000000:00:05.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":15.706658445,"data":"| N/A   59C    P8             11W /   70W |       0MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":15.706661949,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":15.706665417,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":15.706668912,"data":"\n"}
+,{"stream_name":"stdout","time":15.706671997,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":15.706675409,"data":"| Processes:                                                                              |\n"}
+,{"stream_name":"stdout","time":15.706693344,"data":"|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n"}
+,{"stream_name":"stdout","time":15.706698009,"data":"|        ID   ID                                                               Usage      |\n"}
+,{"stream_name":"stdout","time":15.706701696,"data":"|=========================================================================================|\n"}
+,{"stream_name":"stdout","time":15.706704982,"data":"|  No running processes found                                                             |\n"}
+,{"stream_name":"stdout","time":15.706710349,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":15.70671418,"data":"\n"}
+,{"stream_name":"stdout","time":16.631316932,"data":"commit e2faadffb561009c3a897f88f9ce835ceb74ac31\n"}
+,{"stream_name":"stderr","time":17.071861502,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stderr","time":17.071928754,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stderr","time":17.274265917,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stderr","time":17.274305167,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stderr","time":17.274311237,"data":"\n"}
+,{"stream_name":"stderr","time":17.27431501,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stderr","time":17.274318604,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":19.245266407,"data":"$ python -m pip install -q -r requirements.txt torch==2.14.1 torchvision==0.29.1 warp-lang==1.18.0 numpy==2.5.3 scipy==1.18.1\n"}
+,{"stream_name":"stderr","time":19.295517242,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stderr","time":19.295544955,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stderr","time":19.498869337,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stderr","time":19.498897025,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stderr","time":19.498901864,"data":"\n"}
+,{"stream_name":"stderr","time":19.498905451,"data":"Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"}
+,{"stream_name":"stderr","time":19.49890985,"data":"ModuleNotFoundError: No module named 'wrapt'\n"}
+,{"stream_name":"stdout","time":671.616916583,"data":"train {'n_samples': 4096, 'resolution': 256, 'seed': 1000, 'generator': 'IndependentDarcy2D (this repository: independent Fourier coefficients, upstream solver)', 'independent_samples': True, 'distinct_permeability_fields': 4096, 'convergence_threshold': 1e-07, 'max_iterations': 30000, 'generation_batch_size': 64, 'generation_device': 'cuda', 'physicsnemo_version': '2.3.0a0', 'generation_seconds': 224.47293684199997, 'generation_seconds_per_sample': 0.0548029630961914, 'kernel_residual_rms': 0.005856454349075238, 'flux_form_residual_rms': 10.517036372579433, 'permeability_mean': 1.2460658550262451, 'permeability_std': 0.7499896883964539, 'pressure_mean': 0.044881805777549744, 'pressure_std': 0.027669589966535568, 'loaded_from_cache': False, 'split': 'train', 'file': 'train_r256_n4096_c3e5bf4264.npz', 'preparation_seconds': 230.611805301, 'distinct_fields': 4096, 'file_bytes': 2147487360, 'process_peak_rss_mib': 6641.125, 'gpu': {'allocated_mib': 0.0, 'reserved_mib': 16.0, 'peak_allocated_mib': 16.0, 'peak_reserved_mib': 16.0, 'free_mib': 14774.8125}}\n"}
+,{"stream_name":"stdout","time":671.617011519,"data":"validation {'n_samples': 256, 'resolution': 256, 'seed': 2000, 'generator': 'IndependentDarcy2D (this repository: independent Fourier coefficients, upstream solver)', 'independent_samples': True, 'distinct_permeability_fields': 256, 'convergence_threshold': 1e-07, 'max_iterations': 30000, 'generation_batch_size': 64, 'generation_device': 'cuda', 'physicsnemo_version': '2.3.0a0', 'generation_seconds': 14.163326044999963, 'generation_seconds_per_sample': 0.055325492363281104, 'kernel_residual_rms': 0.005528926320932629, 'flux_form_residual_rms': 10.448037502684327, 'permeability_mean': 1.251169204711914, 'permeability_std': 0.7499991059303284, 'pressure_mean': 0.04468502104282379, 'pressure_std': 0.02752603590488434, 'loaded_from_cache': False, 'split': 'validation', 'file': 'validation_r256_n256_5a57f6a9cf.npz', 'preparation_seconds': 14.488162959000078, 'distinct_fields': 256, 'file_bytes': 134221340, 'process_peak_rss_mib': 6641.125, 'gpu': {'allocated_mib': 0.0, 'reserved_mib': 16.0, 'peak_allocated_mib': 16.0, 'peak_reserved_mib': 16.0, 'free_mib': 14774.8125}}\n"}
+,{"stream_name":"stdout","time":671.617042303,"data":"Model FNO does not support AMP on GPUs, turning off\n"}
+,{"stream_name":"stdout","time":671.617047902,"data":"WARNING:darcy_fno:Model FNO does not support AMP on GPUs, turning off\n"}
+,{"stream_name":"stdout","time":671.617051913,"data":"WARNING:checkpoint:`DistributedManager` not initialized already. Initializing now, but this might lead to unexpected errors\n"}
+,{"stream_name":"stdout","time":671.617056557,"data":"/tmp/darcy-verification-env/lib/python3.13/site-packages/physicsnemo/distributed/manager.py:483: UserWarning: Could not initialize using ENV, SLURM or OPENMPI methods. Assuming this is a single process job\n"}
+,{"stream_name":"stdout","time":671.617061445,"data":"  warn(\n"}
+,{"stream_name":"stdout","time":671.617065256,"data":"WARNING:checkpoint:Output directory /tmp/fno-probe-wjwbpcxj/run/checkpoints does not exist, will attempt to create\n"}
+,{"stream_name":"stdout","time":671.61707129,"data":"{'status': 'complete', 'datasets': {'train': {'n_samples': 4096, 'resolution': 256, 'seed': 1000, 'generator': 'IndependentDarcy2D (this repository: independent Fourier coefficients, upstream solver)', 'independent_samples': True, 'distinct_permeability_fields': 4096, 'convergence_threshold': 1e-07, 'max_iterations': 30000, 'generation_batch_size': 64, 'generation_device': 'cuda', 'physicsnemo_version': '2.3.0a0', 'generation_seconds': 224.47293684199997, 'generation_seconds_per_sample': 0.0548029630961914, 'kernel_residual_rms': 0.005856454349075238, 'flux_form_residual_rms': 10.517036372579433, 'permeability_mean': 1.2460658550262451, 'permeability_std': 0.7499896883964539, 'pressure_mean': 0.044881805777549744, 'pressure_std': 0.027669589966535568, 'loaded_from_cache': False, 'split': 'train', 'file': 'train_r256_n4096_c3e5bf4264.npz', 'preparation_seconds': 230.611805301, 'distinct_fields': 4096, 'file_bytes': 2147487360, 'process_peak_rss_mib': 6641.125, 'gpu': {'allocated_mib': 0.0, 'reserved_mib': 16.0, 'peak_allocated_mib': 16.0, 'peak_reserved_mib': 16.0, 'free_mib': 14774.8125}}, 'validation': {'n_samples': 256, 'resolution': 256, 'seed': 2000, 'generator': 'IndependentDarcy2D (this repository: independent Fourier coefficients, upstream solver)', 'independent_samples': True, 'distinct_permeability_fields': 256, 'convergence_threshold': 1e-07, 'max_iterations': 30000, 'generation_batch_size': 64, 'generation_device': 'cuda', 'physicsnemo_version': '2.3.0a0', 'generation_seconds': 14.163326044999963, 'generation_seconds_per_sample': 0.055325492363281104, 'kernel_residual_rms': 0.005528926320932629, 'flux_form_residual_rms': 10.448037502684327, 'permeability_mean': 1.251169204711914, 'permeability_std': 0.7499991059303284, 'pressure_mean': 0.04468502104282379, 'pressure_std': 0.02752603590488434, 'loaded_from_cache': False, 'split': 'validation', 'file': 'validation_r256_n256_5a57f6a9cf.npz', 'preparation_seconds': 14.488162959000078, 'distinct_fields': 256, 'file_bytes': 134221340, 'process_peak_rss_mib': 6641.125, 'gpu': {'allocated_mib': 0.0, 'reserved_mib': 16.0, 'peak_allocated_mib': 16.0, 'peak_reserved_mib': 16.0, 'free_mib': 14774.8125}}}, 'expected_updates': 64, 'optimizer_updates': 64, 'settings': {'resolution': 256, 'batch_size': 64, 'modes': 16, 'seed': 0, 'epochs': 1, 'tolerance': 1e-07}, 'training': {'run': 'run', 'fno_modes': 16, 'seed': 0, 'parameters': 4200177, 'optimiser_steps': 64, 'training_samples_seen': 4096, 'final_train_loss': 0.34855908155441284, 'train_seconds': 100.52371320199995, 'optimisation_seconds': 96.22235758499994, 'data_seconds': 0.9789731959999699, 'peak_train_memory_mb': 1152.3525390625}, 'checkpoint_seconds': 0.11747602399998414, 'mean_update_seconds': 1.5021185739062552, 'steady_update_seconds': 1.4904241953015913, 'elapsed_seconds': 353.29590862799995, 'whole_device_sampled_peak_mib': 12911, 'memory_monitor_errors': [], 'train_peak_allocated_mib': 9941.3642578125, 'train_peak_reserved_mib': 12740.0}\n"}
+,{"stream_name":"stdout","time":671.617086934,"data":"\n"}
+,{"stream_name":"stdout","time":671.617090768,"data":"Feasibility: complete | optimizer updates: 64\n"}
+,{"stream_name":"stdout","time":671.617094354,"data":"Archive: /kaggle/working/cuda_training_probe.zip\n"}
+,{"stream_name":"stderr","time":676.782187322,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":676.782236272,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":676.962577583,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":676.962629852,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":677.733886765,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":677.809408907,"data":"[NbConvertApp] Writing 19279 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":680.277568991,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":680.826665764,"data":"[NbConvertApp] Writing 306307 bytes to __results__.html\n"}
+]

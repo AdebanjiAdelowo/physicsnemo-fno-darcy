@@ -1,0 +1,8 @@
+{
+  "optimizer_hours_per_run": 1.6200575594333335,
+  "validation_hours_per_run": 0.02766883029999955,
+  "checkpoint_hours_per_run": 0.00022842560222219137,
+  "hours_per_run": 1.6479548153355552,
+  "hours_for_study": 19.775457784026663,
+  "planning_hours_with_25_percent_margin": 24.719322230033328
+}
