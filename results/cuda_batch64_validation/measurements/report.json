@@ -1,0 +1,298 @@
+{
+  "environment": {
+    "timestamp_utc": "2026-11-13T14:20:00+00:00",
+    "git_commit": "4fcab71e8e253d39b6dd0728e472d2f719424882",
+    "git_dirty": false,
+    "device": "cuda",
+    "gpu_name": "Tesla T4",
+    "cuda_version": "13.0",
+    "python_version": "3.13.16",
+    "torch_version": "2.14.1+cu130",
+    "physicsnemo": {
+      "version": "2.3.0a0",
+      "commit": "b45a5c810c741e6b41f8515be24c51121f8fc21f",
+      "url": "https://github.com/NVIDIA/physicsnemo.git"
+    },
+    "warp_version": "1.18.0",
+    "numpy_version": "2.5.3",
+    "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "scipy_version": "1.18.1"
+  },
+  "config": {
+    "generator": "IndependentDarcy2D",
+    "resolution": 256,
+    "batch_size": 64,
+    "convergence_threshold": 1e-07,
+    "max_iterations": 30000,
+    "dx": 0.0038910505836575876,
+    "seeds": [
+      1000,
+      1001,
+      1002,
+      1003
+    ]
+  },
+  "batches": [
+    {
+      "seed": 1000,
+      "init_seconds": 0.015390152999998463,
+      "generation_seconds": 3.7555636309999727,
+      "samples_per_second": 17.041383474831203,
+      "distinct_fields": 64,
+      "public_fields": {
+        "permeability": {
+          "shape": [
+            64,
+            1,
+            256,
+            256
+          ],
+          "dtype": "float32"
+        },
+        "darcy": {
+          "shape": [
+            64,
+            1,
+            256,
+            256
+          ],
+          "dtype": "float32"
+        }
+      },
+      "valid_tensor_layout": true,
+      "permeability_values": [
+        0.5,
+        2.0
+      ],
+      "permeability_counts": [
+        2196007,
+        2031129
+      ],
+      "nan_count": 0,
+      "infinity_count": 0,
+      "upstream_max_update": 9.313225746154785e-08,
+      "batch_met_tolerance": true,
+      "samples_missing_tolerance": 0
+    },
+    {
+      "seed": 1001,
+      "init_seconds": 0.0014919879999979457,
+      "generation_seconds": 1.9937142690000087,
+      "samples_per_second": 32.10088877585282,
+      "distinct_fields": 64,
+      "public_fields": {
+        "permeability": {
+          "shape": [
+            64,
+            1,
+            256,
+            256
+          ],
+          "dtype": "float32"
+        },
+        "darcy": {
+          "shape": [
+            64,
+            1,
+            256,
+            256
+          ],
+          "dtype": "float32"
+        }
+      },
+      "valid_tensor_layout": true,
+      "permeability_values": [
+        0.5,
+        2.0
+      ],
+      "permeability_counts": [
+        2047488,
+        2179648
+      ],
+      "nan_count": 0,
+      "infinity_count": 0,
+      "upstream_max_update": 9.685754776000977e-08,
+      "batch_met_tolerance": true,
+      "samples_missing_tolerance": 0
+    },
+    {
+      "seed": 1002,
+      "init_seconds": 0.001499554000019998,
+      "generation_seconds": 1.9991559409999695,
+      "samples_per_second": 32.01351064589162,
+      "distinct_fields": 64,
+      "public_fields": {
+        "permeability": {
+          "shape": [
+            64,
+            1,
+            256,
+            256
+          ],
+          "dtype": "float32"
+        },
+        "darcy": {
+          "shape": [
+            64,
+            1,
+            256,
+            256
+          ],
+          "dtype": "float32"
+        }
+      },
+      "valid_tensor_layout": true,
+      "permeability_values": [
+        0.5,
+        2.0
+      ],
+      "permeability_counts": [
+        2108093,
+        2119043
+      ],
+      "nan_count": 0,
+      "infinity_count": 0,
+      "upstream_max_update": 9.685754776000977e-08,
+      "batch_met_tolerance": true,
+      "samples_missing_tolerance": 0
+    },
+    {
+      "seed": 1003,
+      "init_seconds": 0.0014817829999742571,
+      "generation_seconds": 2.020596473000012,
+      "samples_per_second": 31.67381555654117,
+      "distinct_fields": 64,
+      "public_fields": {
+        "permeability": {
+          "shape": [
+            64,
+            1,
+            256,
+            256
+          ],
+          "dtype": "float32"
+        },
+        "darcy": {
+          "shape": [
+            64,
+            1,
+            256,
+            256
+          ],
+          "dtype": "float32"
+        }
+      },
+      "valid_tensor_layout": true,
+      "permeability_values": [
+        0.5,
+        2.0
+      ],
+      "permeability_counts": [
+        2112955,
+        2114181
+      ],
+      "nan_count": 0,
+      "infinity_count": 0,
+      "upstream_max_update": 9.685754776000977e-08,
+      "batch_met_tolerance": true,
+      "samples_missing_tolerance": 0
+    }
+  ],
+  "status": "complete",
+  "distinct_fields": 256,
+  "replay": {
+    "seed": 1000,
+    "pressure_exact": true,
+    "permeability_exact": true,
+    "timing": {
+      "seed": 1000,
+      "init_seconds": 0.0012867539999774635,
+      "generation_seconds": 2.02939891799997,
+      "samples_per_second": 31.536431517896844,
+      "distinct_fields": 64,
+      "public_fields": {
+        "permeability": {
+          "shape": [
+            64,
+            1,
+            256,
+            256
+          ],
+          "dtype": "float32"
+        },
+        "darcy": {
+          "shape": [
+            64,
+            1,
+            256,
+            256
+          ],
+          "dtype": "float32"
+        }
+      },
+      "valid_tensor_layout": true,
+      "permeability_values": [
+        0.5,
+        2.0
+      ],
+      "permeability_counts": [
+        2196007,
+        2031129
+      ],
+      "nan_count": 0,
+      "infinity_count": 0,
+      "upstream_max_update": 9.313225746154785e-08,
+      "batch_met_tolerance": true,
+      "samples_missing_tolerance": 0
+    }
+  },
+  "memory": {
+    "baseline_mib": 3,
+    "sampled_peak_mib": 201,
+    "sampled_increase_mib": 198,
+    "samples": 97,
+    "errors": []
+  },
+  "generation_stage_seconds": 13.034265648999963,
+  "statistics": {
+    "stencil_rel_l2": {
+      "mean": 0.0016434505753583216,
+      "median": 0.0014074847601473564,
+      "std": 0.0008525036716819733,
+      "p95": 0.003450601652783358,
+      "p99": 0.004155849662636881,
+      "max": 0.004252678208456495
+    },
+    "conservative_rel_l2": {
+      "mean": 0.28572175773636865,
+      "median": 0.278040635996857,
+      "std": 0.09529893108659405,
+      "p95": 0.4684945910964076,
+      "p99": 0.5117651799926561,
+      "max": 0.5731130536063537
+    },
+    "boundary_stencil_rel_l2": {
+      "mean": 0.0018978356769653714,
+      "median": 0.001751593310288619,
+      "std": 0.000787609011439703,
+      "p95": 0.0035470423253741194,
+      "p99": 0.004218639592561643,
+      "max": 0.004841841059174432
+    },
+    "final_max_update": {
+      "mean": 7.07223080098629e-08,
+      "median": 6.705522537231445e-08,
+      "std": 9.910869219972468e-09,
+      "p95": 8.940696716308594e-08,
+      "p99": 9.685754776000977e-08,
+      "max": 9.685754776000977e-08
+    }
+  },
+  "reference_samples": 256,
+  "cpu_reference_seconds": 221.61924223900036,
+  "samples_missing_tolerance": 0,
+  "samples_missing_tolerance_percent": 0.0,
+  "analysis_wall_seconds": 222.17549808499996,
+  "verification_seconds": 235.20976373399992
+}
