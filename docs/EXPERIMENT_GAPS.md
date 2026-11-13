@@ -10,7 +10,7 @@ What has been run, what has not, and what each missing experiment would answer. 
 | Same, seeds 3 to 5 | run (audit) | `results/audit_seeds345/` |
 | Same, three times the steps, modes 8/12/16, seed 0 | run (audit) | `results/audit_long90/` |
 | Generator checks on CPU | run | `results/generator_check.json`, `results/audit/data_audit.json` |
-| Generator checks on CUDA | **PENDING** | Kaggle step A |
+| Generator checks on CUDA | Run | [Tesla T4 verification](CUDA_GENERATOR_VALIDATION.md) |
 | Main study, 256 × 256, `configs/full.yaml` | **PENDING** | Kaggle step B |
 | Upstream control, `configs/official.yaml` | **PENDING** | Kaggle step C |
 
@@ -42,15 +42,15 @@ python scripts/train.py --config local name=data4096 training.pseudo_epoch_sampl
 
 **Cost (measured rates).** Generation about 16 to 20 min on CPU (the 1024-sample set took about 4 to 5 min), 134 MB. Training 4× the steps of G1-3×, about 55 min per run: 12 runs ≈ 11 h on MPS. A CUDA GPU is preferable.
 
-### G3. CUDA generator check (cheap, decisive for one open question)
+### G3. CUDA generator check
 
-**Why.** The repeated-field defect of `Darcy2D` is measured on CPU only. The Warp source suggests that it is backend-independent, but it has not been executed on CUDA.
+The Tesla T4 run reproduced the CPU diversity counts for both generators and matched the CPU reference errors. See the [CUDA verification](CUDA_GENERATOR_VALIDATION.md).
 
 ```bash
 python scripts/verify_generator.py --device cuda
 ```
 
-**Cost.** Minutes on any CUDA GPU. Kaggle step A runs it before any training.
+**Measured cost.** 22.07 s for verification on a Tesla T4, including the CPU reference solves.
 
 ### G4. The 256 × 256 study (`configs/full.yaml`)
 
@@ -111,6 +111,6 @@ python scripts/train.py --config local name=repro_seed0 'study.fno_modes=[8]' 's
 ## Not to be claimed until the gaps are closed
 
 - An optimal number of Fourier modes, for this or any resolution.
-- Any statement about the 256 × 256 benchmark, the upstream example's accuracy, or CUDA behaviour.
+- Any statement about the 256 × 256 benchmark, the upstream example's accuracy, or CUDA training behaviour.
 - Any statement about the Darcy equation in divergence form.
 - That the errors of the reduced study are converged.

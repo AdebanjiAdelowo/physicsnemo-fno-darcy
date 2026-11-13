@@ -1,0 +1,10 @@
+generator device: cuda (Tesla T4)
+Darcy2D: distinct fields per batch of 16: [1, 1], distinct coefficient values per batch: [4, 4] of 1600
+IndependentDarcy2D: distinct fields per batch of 16: [16, 16], distinct coefficient values per batch: [1600, 1600] of 1600
+resolution 64, tolerance 1e-06: relative L2 against direct solves: own stencil 4.16e-03, conservative Darcy 3.10e-01, k*laplace(u)=-1 1.99e-02
+resolution 64, tolerance 1e-07: relative L2 against direct solves: own stencil 4.54e-04, conservative Darcy 3.15e-01, k*laplace(u)=-1 1.63e-02
+resolution 128, tolerance 1e-06: relative L2 against direct solves: own stencil 2.70e-03, conservative Darcy 3.34e-01, k*laplace(u)=-1 7.45e-03
+resolution 128, tolerance 1e-07: relative L2 against direct solves: own stencil 1.63e-03, conservative Darcy 3.30e-01, k*laplace(u)=-1 1.02e-02
+resolution 256, tolerance 1e-06: relative L2 against direct solves: own stencil 1.33e-02, conservative Darcy 3.53e-01, k*laplace(u)=-1 1.05e-02
+resolution 256, tolerance 1e-07: relative L2 against direct solves: own stencil 1.68e-03, conservative Darcy 3.40e-01, k*laplace(u)=-1 5.03e-03
+written under /kaggle/working/generator-check-cuda: results/generator_check_cuda.json, figures/generator_check_cuda.png

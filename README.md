@@ -4,20 +4,6 @@ A parameter study built on the Fourier Neural Operator (FNO) Darcy-flow example 
 
 **Question.** How does the Fourier representation, and with it the model capacity, affect the accuracy and the computational cost of an FNO surrogate for Darcy flow?
 
-## Status of the results
-
-| Study | Configuration | Data generator | Device | Status |
-|---|---|---|---|---|
-| Reduced study, 64 × 64 | `configs/local.yaml` | `IndependentDarcy2D` | Apple MPS | **run**; all numbers in [Results](#results) come from it |
-| Reduced study, seeds 3 to 5 | `configs/local.yaml` | `IndependentDarcy2D` | Apple MPS | **run** ([audit](docs/SCIENTIFIC_AUDIT.md)) |
-| Reduced study, three times the training budget | `configs/local.yaml` with overrides | `IndependentDarcy2D` | Apple MPS | **run** ([audit](docs/SCIENTIFIC_AUDIT.md)) |
-| Generator checks | `scripts/verify_generator.py` | both | CPU | **run** |
-| Generator checks | `scripts/verify_generator.py --device cuda` | both | CUDA | pending |
-| Main study, 256 × 256 | `configs/full.yaml` | `IndependentDarcy2D` | CUDA | pending |
-| Upstream-behaviour control | `configs/official.yaml` | `Darcy2D` as shipped | CUDA | pending |
-
-No CUDA result of any kind is reported in this repository yet.
-
 ## Motivation
 
 A neural operator learns the map from a coefficient field to the solution of a PDE, so that a new coefficient field is solved by one forward pass. In an FNO each layer applies a learned linear operator to the lowest Fourier modes of its input and discards the rest. The number of retained modes is therefore the main capacity setting of the architecture: it fixes the spatial scales the spectral layers can act on, and the parameter count grows with its square. The Darcy problem with a piecewise-constant permeability is a common test because the input is discontinuous while the solution is smooth.
@@ -105,7 +91,7 @@ No external dataset is used. `Darcy2D` draws Fourier coefficients on $[-1, 1]$, 
 | `Darcy2D` as shipped | 1 | 4 of 1600 |
 | `IndependentDarcy2D` (this repository) | 16 | 1600 of 1600 |
 
-As shipped, all samples of a batch are the same field, and all frequencies of a sample share one amplitude per trigonometric component. Because the field is thresholded at zero, it depends only on the direction of these four amplitudes: the shipped generator samples a three-parameter family of fields ([`docs/GENERATOR_VALIDATION.md`](docs/GENERATOR_VALIDATION.md)). The same four-of-many pattern was reproduced with a standalone kernel on Warp 1.5.1, 1.10.1, 1.14.0, 1.16.0, 1.17.0 and 1.18.0 on CPU. **It has not been tested on CUDA.** Whether the Warp CUDA backend behaves the same way is the first step of the GPU workflow below (`scripts/verify_generator.py --device cuda`), and the statements in this section hold for CPU until that check is recorded. `IndependentDarcy2D` draws the coefficients from NumPy with the same range and leaves the synthesis, the thresholding and the solver to the upstream kernels. All studies in this repository use it; `configs/official.yaml` keeps the upstream behaviour.
+As shipped, all samples of a batch are the same field, and all frequencies of a sample share one amplitude per trigonometric component. Because the field is thresholded at zero, it depends only on the direction of these four amplitudes: the shipped generator samples a three-parameter family of fields ([`docs/GENERATOR_VALIDATION.md`](docs/GENERATOR_VALIDATION.md)). The same four-of-many pattern was reproduced with a standalone kernel on Warp 1.5.1, 1.10.1, 1.14.0, 1.16.0, 1.17.0 and 1.18.0 on CPU. On a Kaggle Tesla T4 with Warp 1.18.0, both samplers reproduced the CPU diversity counts. The independent sampler also reproduced pressure and permeability exactly at a fixed seed on the T4. At 256 × 256 and tolerance $10^{-7}$, its mean relative L2 errors were 0.168% against the NVIDIA stencil and 34.0% against the conservative reference. [CUDA generator verification](docs/CUDA_GENERATOR_VALIDATION.md). `IndependentDarcy2D` draws the coefficients from NumPy with the same range and leaves the synthesis, the thresholding and the solver to the upstream kernels. All studies in this repository use it; `configs/official.yaml` keeps the upstream behaviour.
 
 **2. Solver tolerance.** The Jacobi iteration stops when the largest update falls below `convergence_threshold`. The table gives the relative $L^2$ difference between the generated pressure and a sparse direct solve of the same stencil (mean of 4 samples):
 
@@ -152,7 +138,6 @@ One factor is varied: the number of Fourier modes per dimension, 4, 8, 12 and 16
 | Solver tolerance | $10^{-6}$ | $10^{-7}$ | $10^{-7}$ | $10^{-6}$ |
 | Sampler | independent | independent | independent | as shipped |
 | Device | CPU | CUDA, MPS or CPU | CUDA | CUDA |
-| Run in this repository | yes | yes | no | no |
 
 The largest number of modes that the spectral layer retains without counting a mode twice is $\lfloor (N + 9)/2 \rfloor$ for an $N \times N$ grid with padding 9 (36 at $N = 64$, 132 at $N = 256$); a study that exceeds it is rejected before training. Up to commit `5c81978` the bound was $\lfloor (N + 9)/2 \rfloor + 1$, which admits one setting where the middle row of the Fourier transform passes through both weight blocks of the layer. No configuration of this repository uses it, so no result is affected ([`docs/SCIENTIFIC_AUDIT.md`](docs/SCIENTIFIC_AUDIT.md)).
 
@@ -202,6 +187,8 @@ python scripts/train.py --config official
 `--resume` skips runs that already finished. Neither of the two CUDA configurations has been run for this repository.
 
 ### GPU workflow on Kaggle
+
+For generator verification alone, run [`kaggle/verify_generators.ipynb`](kaggle/verify_generators.ipynb) with an NVIDIA GPU and internet access.
 
 [`kaggle/run_cuda.ipynb`](kaggle/run_cuda.ipynb) is a launcher: it checks out one commit of this repository and calls its scripts. It contains no model or training code. It has been checked statically (`tests/test_notebook.py`) and has not been executed on Kaggle.
 
@@ -254,7 +241,7 @@ python scripts/verify_generator.py
 
 ## Results
 
-### Reduced study (run)
+### Reduced study
 
 `configs/local.yaml`, data from `IndependentDarcy2D`: 64 × 64 grid, 1024 training samples, 30 pseudo-epochs (960 optimiser steps), 256 test samples, three seeds, Apple M3 Pro with MPS. Source: [`results/local/summary.csv`](results/local/summary.csv). Values are mean ± sample standard deviation over the three seeds.
 
@@ -279,16 +266,6 @@ The same configuration and data with seeds 3, 4 and 5 ([`results/audit_seeds345/
 | 16 | 0.97% | 0.85% | 0.91% ± 0.09% | 0.81% to 1.00% |
 
 In the new seeds the order of 8, 12 and 16 modes is reversed. Over six seeds the three settings cannot be distinguished (all pairwise $p > 0.5$, Welch and permutation tests), while 4 modes is worse than each of them in every seed (permutation $p = 0.002$). The timings of these runs are not reported because other work ran on the machine at the same time. Analysis: [`docs/SCIENTIFIC_AUDIT.md`](docs/SCIENTIFIC_AUDIT.md).
-
-### Main study and upstream control (pending)
-
-| Study | Test relative $L^2$ error | Timings and memory |
-|---|---|---|
-| `configs/full.yaml`, 256 × 256, modes 4, 8, 12, 16, three seeds, `IndependentDarcy2D`, CUDA | pending | pending |
-| `configs/official.yaml`, 256 × 256, 12 modes, one seed, `Darcy2D` as shipped, CUDA | pending | pending |
-| Generator checks on CUDA | pending | |
-
-Neither study has been run. The reduced study is at a different resolution, data budget and device, and its numbers do not stand in for these.
 
 ## Figures
 
