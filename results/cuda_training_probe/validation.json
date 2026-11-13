@@ -1,0 +1,11 @@
+{
+  "seconds": 3.320259635999946,
+  "finite": true,
+  "loss": 0.01701699011027813,
+  "mean_relative_l2": 0.06988682597875595,
+  "allocated_mib": 1152.3525390625,
+  "reserved_mib": 12740.0,
+  "peak_allocated_mib": 5598.3603515625,
+  "peak_reserved_mib": 12740.0,
+  "free_mib": 2000.8125
+}
